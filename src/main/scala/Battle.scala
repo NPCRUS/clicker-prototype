@@ -5,24 +5,35 @@ object Battle {
 }
 
 class Battle(opponent1: Pawn, opponent2: Pawn) {
-  val itemsCombined: List[(Item, Int)] =
-    for(item <- opponent1.items() ++ opponent2.items()) yield (item, item.cd())
+  val itemsCombined: List[CalcItem] =
+    for(comb <- opponent1.items.map((_, opponent1)) ++ opponent2.items.map((_, opponent2)))
+      yield CalcItem(comb._2, comb._1, comb._1.cd)
 
   def calculate(): List[Action] = {
     @tailrec
-    def _calculate(actions: List[Action], items: List[(Item, Int)], timestamp: Int = 0): List[Action] = {
-      val ordered = items.sortBy(_._2)
-      val currentAction = ordered.head
-      val currentItem = currentAction._1
+    def _calculate(actions: List[Action], items: List[CalcItem], timestamp: Int = 0): List[Action] = {
+      val ordered = items.sortBy(_.cd)
+      val currentCalc = ordered.head
+      val currentItem = currentCalc.item
 
       if(actions.length == 25) actions
       else _calculate(
-        actions :+ new Action(currentItem, timestamp + currentAction._2),
-        ordered.tail.map(t => (t._1, t._2 - currentAction._2)) :+ (currentItem, currentItem.cd()),
-        timestamp + currentAction._2
+        actions :+ createAction(currentCalc, timestamp + currentCalc.cd),
+        ordered.tail.map(t => t.withNewCd(t.cd - currentCalc.cd)) :+ currentCalc.withNewCd(currentItem.cd),
+        timestamp + currentCalc.cd
       )
     }
 
     _calculate(List.empty, itemsCombined)
   }
+
+  private def createAction(ci: CalcItem, timestamp: Int): Action = {
+    ci.item match {
+      case w: Weapon => Attack(ci.pawn, ci.item, timestamp, w.damage)
+    }
+  }
+}
+
+case class CalcItem(pawn: Pawn, item: Item, cd: Int) {
+  def withNewCd(newCd: Int) = CalcItem(pawn, item , newCd)
 }

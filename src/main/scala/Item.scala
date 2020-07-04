@@ -1,7 +1,8 @@
-object Item {
-  def apply(cd: Int): Item = new Item(cd)
+trait Item {
+  def cd: Int
+  def name: String
 }
 
-class Item(cd: Int) {
-  def cd(): Int = cd
+class Weapon(val cd: Int, val damage: Int, val name: String) extends Item {
+
 }
