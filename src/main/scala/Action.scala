@@ -6,10 +6,11 @@ trait Action {
 }
 
 object Attack {
-  def apply(init: Opponent, target: Opponent, item: Weapon, timestamp: Int, damage: Int): Attack = {
-    val initialDamage = init.calculateDamage(item)
-    val (actualDamage, newTarget) = target.dealDamage(initialDamage)
-    new Attack(init, newTarget, item, timestamp, actualDamage)
+  def apply(init: Opponent, target: Opponent, item: Weapon, timestamp: Int): Attack = {
+    val weaponBaseDamage = item.getDamage
+    val initialInputDamage = init.calculateDamage(item, weaponBaseDamage)
+    val (finalDamage, newTarget) = target.dealDamage(initialInputDamage)
+    new Attack(init, newTarget, item, timestamp, finalDamage)
   }
 }
 
