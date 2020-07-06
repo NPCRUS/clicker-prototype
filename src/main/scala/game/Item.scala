@@ -1,3 +1,5 @@
+package game
+
 import scala.util.Random
 
 trait Item {
@@ -14,12 +16,12 @@ class Weapon(
   def getDamage: Int = {
     val damageMultiplier: Double = Random.between(85, 115).toDouble / 100
     val finalDamage = (baseDamage * damageMultiplier).round.toInt
-    // all crit chances and crit values goes to Opponent
+    // all crit chances and crit values goes to game.Opponent
 
     finalDamage
   }
 }
 
-class Armor(val name: String, val cd: Int) extends Item {
+class Armor(val name: String, val cd: Int, val armor: Int) extends Item {
 
 }

@@ -1,3 +1,5 @@
+package game
+
 trait Action {
   def init: Opponent
   def target: Opponent

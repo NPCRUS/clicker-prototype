@@ -1,3 +1,5 @@
+package game
+
 object ArmorSet {
   def empty: ArmorSet = new ArmorSet(None, None, None, None, None, None, None, None)
 }
@@ -12,7 +14,7 @@ case class ArmorSet(
   ring1: Option[Armor],
   ring2: Option[Armor]
 ) {
-  def getAll(): List[Armor] =
+  def getAll: List[Armor] =
     (List.empty :+ helmet :+ body :+ gloves :+ boots :+ belt :+ amulet :+ ring1 :+ ring2)
     .filter(_.isDefined)
     .map(_.get)

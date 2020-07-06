@@ -1,8 +1,6 @@
-import scala.annotation.tailrec
+package game
 
-object Battle {
-  def apply(o1: Pawn, o2: Pawn): Battle = new Battle(o1, o2)
-}
+import scala.annotation.tailrec
 
 class Battle(opponent1: Pawn, opponent2: Pawn) {
   val itemsCombined: List[CalcItem] =
@@ -51,6 +49,10 @@ class Battle(opponent1: Pawn, opponent2: Pawn) {
       (op._2, op._1)
     }
   }
+}
+
+object Battle {
+  def apply(o1: Pawn, o2: Pawn): Battle = new Battle(o1, o2)
 }
 
 case class CalcItem(pawn: Pawn, item: Item, cd: Int) {
