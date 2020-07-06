@@ -1,6 +1,6 @@
 object Main extends App {
-  val knife = new Weapon(920, 2, "knife")
-  val pitchfork = new Weapon(2300, 5, "pitchfork")
+  val knife = new Weapon("knife", false, 920, 2)
+  val pitchfork = new Weapon("pitchfork", true, 2300,5)
 
   val pawn1 = Pawn("Mate", 40, List(knife), ArmorSet.empty)
   val pawn2 = Pawn("John", 40, List(pitchfork), ArmorSet.empty)
