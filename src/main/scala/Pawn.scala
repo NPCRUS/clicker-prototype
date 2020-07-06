@@ -1,7 +1,8 @@
 object Pawn {
-  def apply(name: String, hp: Int, items: List[Item]): Pawn = new Pawn(name, hp, items)
+  def apply(name: String, hp: Int, items: List[Item], armorSet: ArmorSet): Pawn =
+    new Pawn(name, hp, items, armorSet)
 }
 
-class Pawn(val name: String, val hp: Int, val items: List[Item]) {
+class Pawn(val name: String, val hp: Int, val items: List[Item], val armorSet: ArmorSet) {
 
 }

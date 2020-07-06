@@ -2,8 +2,8 @@ object Main extends App {
   val knife = new Weapon(920, 2, "knife")
   val pitchfork = new Weapon(2300, 5, "pitchfork")
 
-  val pawn1 = Pawn("Mate", 40, List(knife))
-  val pawn2 = Pawn("John", 40, List(pitchfork))
+  val pawn1 = Pawn("Mate", 40, List(knife), ArmorSet.empty)
+  val pawn2 = Pawn("John", 40, List(pitchfork), ArmorSet.empty)
 
   val battle = new Battle(pawn1, pawn2)
   val actions = battle.calculate()
