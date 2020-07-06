@@ -3,5 +3,9 @@ object Opponent {
 }
 
 class Opponent(val pawn: Pawn, val hp: Int) {
-  def dealDamage(damage: Int): Opponent = new Opponent(pawn, hp - damage)
+  def calculateDamage(item: Weapon): Int = item.damage
+  def dealDamage(damage: Int): (Int, Opponent) = {
+    // place to some armor reduction and stuff
+    (damage, new Opponent(pawn, hp - damage))
+  }
 }

@@ -41,9 +41,7 @@ class Battle(opponent1: Pawn, opponent2: Pawn) {
 
   private def attack(op: (Opponent, Opponent), ci: CalcItem, timestamp: Int, weapon: Weapon): Attack = {
     val initTargetTuple = initTarget(op, ci)
-    val targetOp = initTargetTuple._2.dealDamage(weapon.damage)
-
-    Attack(initTargetTuple._1, targetOp, weapon, timestamp, weapon.damage)
+    Attack(initTargetTuple._1, initTargetTuple._2, weapon, timestamp, weapon.damage)
   }
 
   private def initTarget(op: (Opponent, Opponent), ci: CalcItem): (Opponent, Opponent) = {
