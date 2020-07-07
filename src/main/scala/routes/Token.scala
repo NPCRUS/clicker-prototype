@@ -9,7 +9,7 @@ case class Token(
   opaque_user_id: String,
   channel_id: String,
   role: String,
-  is_unlinked: String,
+  is_unlinked: Boolean,
   pubsub_perms: PubSubPerms
 )
 
