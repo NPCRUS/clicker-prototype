@@ -7,4 +7,6 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val RawTokenProtocol: RootJsonFormat[RawToken] = jsonFormat1(RawToken)
   implicit val PubSubPermsProtocol: RootJsonFormat[PubSubPerms] = jsonFormat2(PubSubPerms)
   implicit val TokenProtocol: RootJsonFormat[Token] = jsonFormat6(Token)
+
+  implicit val UserProtocol: RootJsonFormat[User] = jsonFormat5(User)
 }
