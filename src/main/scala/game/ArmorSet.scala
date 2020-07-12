@@ -5,14 +5,14 @@ object ArmorSet {
 }
 
 case class ArmorSet(
-  helmet: Option[Armor],
-  body: Option[Armor],
-  gloves: Option[Armor],
-  boots: Option[Armor],
-  belt: Option[Armor],
-  amulet: Option[Armor],
-  ring1: Option[Armor],
-  ring2: Option[Armor]
+  helmet: Option[Helmet],
+  body: Option[Body],
+  gloves: Option[Gloves],
+  boots: Option[Boots],
+  belt: Option[Belt],
+  amulet: Option[Amulet],
+  ring1: Option[Ring],
+  ring2: Option[Ring]
 ) {
   def getAll: List[Armor] =
     (List.empty :+ helmet :+ body :+ gloves :+ boots :+ belt :+ amulet :+ ring1 :+ ring2)

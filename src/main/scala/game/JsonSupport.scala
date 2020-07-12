@@ -1,13 +1,89 @@
 package game
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import game.ArmorType.ArmorType
 import spray.json._
 
 object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   // ITEMS
-  implicit val weaponProtocol: RootJsonFormat[Weapon] = jsonFormat5(Weapon)
-  implicit val armorProtocol: RootJsonFormat[Armor] = jsonFormat4(Armor)
+  implicit object ArmorTypeFormat extends RootJsonFormat[ArmorType.ArmorType] {
+    override def write(obj: ArmorType): JsValue = JsString(obj.toString)
+
+    override def read(json: JsValue): ArmorType = json match {
+      case JsString(str) => ArmorType.withName(str)
+      case unknown => deserializationError(s"json deserialize error: $unknown")
+    }
+  }
+
+  // ARMOR
+  class ArmorTypedProtocol[T <: Armor](
+    factory: (String, Int, Int) => T
+  ) extends RootJsonFormat[T] {
+    override def write(obj: T): JsValue = {
+      JsObject(
+        "name" -> JsString(obj.name),
+        "cd" -> JsNumber(obj.cd),
+        "armor" -> JsNumber(obj.armor),
+        "armorType" -> obj.armorType.toJson,
+        "_type" -> JsString(obj._type),
+      )
+    }
+
+    override def read(json: JsValue): T = {
+      val fields = json.asJsObject.fields
+      factory(
+        fields("name").convertTo[String],
+        fields("cd").convertTo[Int],
+        fields("armor").convertTo[Int]
+      )
+    }
+  }
+  implicit val helmetProtocol: RootJsonFormat[Helmet] = new ArmorTypedProtocol[Helmet](Helmet.apply)
+  implicit val bodyProtocol: RootJsonFormat[Body] = new ArmorTypedProtocol[Body](Body.apply)
+  implicit val glovesProtocol: RootJsonFormat[Gloves] = new ArmorTypedProtocol[Gloves](Gloves.apply)
+  implicit val bootsProtocol: RootJsonFormat[Boots] = new ArmorTypedProtocol[Boots](Boots.apply)
+  implicit val beltProtocol: RootJsonFormat[Belt] = new ArmorTypedProtocol[Belt](Belt.apply)
+  implicit val amuletProtocol: RootJsonFormat[Amulet] = new ArmorTypedProtocol[Amulet](Amulet.apply)
+  implicit val ringProtocol: RootJsonFormat[Ring] = new ArmorTypedProtocol[Ring](Ring.apply)
   implicit val armorSetProtocol: RootJsonFormat[ArmorSet] = jsonFormat8(ArmorSet.apply)
+
+  implicit object ArmorFormat extends RootJsonFormat[Armor] {
+    override def write(obj: Armor): JsValue =
+      JsObject((obj match {
+        case h: Helmet => h.toJson
+        case b: Body => b.toJson
+        case unknown => deserializationError(s"json deserialize error: $unknown")
+      }).asJsObject.fields)
+
+    override def read(json: JsValue): Armor =
+      json.asJsObject.getFields("armorType") match {
+        case Seq(JsString("helmet")) => json.convertTo[Helmet]
+        case Seq(JsString("body")) => json.convertTo[Body]
+      }
+  }
+
+  // WEAPON
+  implicit object WeaponFormat extends RootJsonFormat[Weapon] {
+    override def write(obj: Weapon): JsValue = {
+      JsObject(
+        "name" -> JsString(obj.name),
+        "cd" -> JsNumber(obj.cd),
+        "baseDamage" -> JsNumber(obj.baseDamage),
+        "twoHanded" -> JsBoolean(obj.twoHanded),
+        "_type" -> JsString(obj._type),
+      )
+    }
+
+    override def read(json: JsValue): Weapon = {
+      val fields = json.asJsObject.fields
+      Weapon(
+        fields("name").convertTo[String],
+        fields("cd").convertTo[Int],
+        fields("baseDamage").convertTo[Int],
+        fields("twoHanded").convertTo[Boolean]
+      )
+    }
+  }
 
   implicit object ItemFormat extends RootJsonFormat[Item] {
     override def write(obj: Item): JsValue =

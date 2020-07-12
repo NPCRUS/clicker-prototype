@@ -1,10 +1,10 @@
 package game
 
 object BattleTest extends App {
-  val knife = new Weapon("knife", false, 920, 2)
-  val pitchfork = new Weapon("pitchfork", true, 2300,5)
+  val knife = Weapon("knife", 920, 2, twoHanded = false)
+  val pitchfork = Weapon("pitchfork", 2300, 5, twoHanded = true)
 
-  val body = new Armor("fucking great armor", 1, 3)
+  val body = Body("fucking great armor", 1, 3)
   val armorSet = new ArmorSet(None, Some(body), None, None, None, None, None, None)
 
   val pawn1 = Pawn("Mate", 40, List(knife), armorSet)
