@@ -1,10 +1,8 @@
-package routes
-
 import java.util.Base64
 
+import JsonSupport._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.StatusCodes
-import JsonSupport._
 import akka.http.scaladsl.server.{Directive1, Directives}
 import javax.crypto.spec.SecretKeySpec
 import pdi.jwt.{JwtAlgorithm, JwtSprayJson}

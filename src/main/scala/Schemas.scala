@@ -1,5 +1,3 @@
-package routes
-
 import slick.jdbc.H2Profile.api._
 
 import scala.concurrent.Future

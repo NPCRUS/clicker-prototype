@@ -1,4 +1,3 @@
-package routes
 
 case class RawToken(
   token: String

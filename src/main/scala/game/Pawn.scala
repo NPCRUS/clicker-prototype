@@ -5,6 +5,11 @@ object Pawn {
     new Pawn(name, hp, items, armorSet)
 }
 
-class Pawn(val name: String, val hp: Int, val items: List[Item], val armorSet: ArmorSet) {
+case class Pawn(
+  name: String,
+  hp: Int,
+  items: List[Item],
+  armorSet: ArmorSet
+) {
 
 }

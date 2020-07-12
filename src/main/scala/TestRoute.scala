@@ -1,7 +1,5 @@
-package routes
-
-import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.server.Route
 
 class TestRoute {
   def getRoutes: Route = path("health") {

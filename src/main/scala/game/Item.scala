@@ -3,15 +3,17 @@ package game
 import scala.util.Random
 
 trait Item {
-  def cd: Int
   def name: String
+  def cd: Int
+  def _type: String
 }
 
-class Weapon(
-  val name: String,
-  val twoHanded: Boolean,
-  val cd: Int,
-  val baseDamage: Int
+case class Weapon(
+  name: String,
+  twoHanded: Boolean,
+  cd: Int,
+  baseDamage: Int,
+  _type: String = "weapon"
 ) extends Item {
   def getDamage: Int = {
     val damageMultiplier: Double = Random.between(85, 115).toDouble / 100
@@ -20,8 +22,14 @@ class Weapon(
 
     finalDamage
   }
+
 }
 
-class Armor(val name: String, val cd: Int, val armor: Int) extends Item {
+case class Armor(
+  name: String,
+  cd: Int,
+  armor: Int,
+  _type: String = "armor"
+) extends Item {
 
 }

@@ -1,5 +1,3 @@
-package routes
-
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
@@ -9,4 +7,5 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val TokenProtocol: RootJsonFormat[Token] = jsonFormat6(Token)
 
   implicit val UserProtocol: RootJsonFormat[User] = jsonFormat5(User)
+
 }

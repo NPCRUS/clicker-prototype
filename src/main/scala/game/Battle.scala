@@ -7,7 +7,7 @@ class Battle(opponent1: Pawn, opponent2: Pawn) {
     for(comb <- opponent1.items.map((_, opponent1)) ++ opponent2.items.map((_, opponent2)))
       yield CalcItem(comb._2, comb._1, comb._1.cd)
 
-  val opponents: (Opponent, Opponent) = (Opponent(opponent1), Opponent(opponent2))
+  val opponents: (Opponent, Opponent) = (Opponent.fromPawn(opponent1), Opponent.fromPawn(opponent2))
 
   def calculate(): List[Action] = {
     @tailrec

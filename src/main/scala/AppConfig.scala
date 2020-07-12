@@ -1,5 +1,3 @@
-package routes
-
 import com.typesafe.config.{Config, ConfigFactory}
 import slick.jdbc.H2Profile.api._
 

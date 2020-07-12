@@ -1,11 +1,15 @@
 package game
 
 object Opponent {
-  def apply(pawn: Pawn): Opponent = new Opponent(pawn, pawn.hp)
+  def apply(pawn: Pawn, hp: Int): Opponent = new Opponent(pawn, hp)
+  def fromPawn(pawn: Pawn): Opponent = new Opponent(pawn, pawn.hp)
 }
 
-class Opponent(val pawn: Pawn, val hp: Int) {
-  val armorSum: Int = pawn.armorSet.getAll.map(_.armor).sum
+case class Opponent(
+  pawn: Pawn,
+  hp: Int
+) {
+  lazy val armorSum: Int = pawn.armorSet.getAll.map(_.armor).sum
 
   def calculateDamage(item: Weapon, baseDamage: Int): Int = {
     // logic for crits and any other sort of multipliers
