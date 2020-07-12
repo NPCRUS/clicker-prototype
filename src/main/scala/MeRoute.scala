@@ -2,6 +2,7 @@ import JsonSupport._
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
+import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -31,16 +32,3 @@ class MeRoute {
     }
   }
 }
-
-//          AppConfig.db.run(
-//            DBIO.seq(
-//              Schemas.users += (None, token.opaque_user_id, token.channel_id, token.role, token.is_unlinked)
-//            )
-//          ).onComplete {
-//            case Success(value) =>
-//              println(value)
-//              complete(StatusCodes.OK)
-//            case Failure(exception) =>
-//              println(exception)
-//              complete(StatusCodes.InternalServerError)
-//          }
