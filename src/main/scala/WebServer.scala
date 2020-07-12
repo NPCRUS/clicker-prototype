@@ -8,5 +8,5 @@ object WebServer extends App {
   implicit val executionContext: ExecutionContext = system.dispatcher
   sys.addShutdownHook(system.terminate())
 
-  val bindingFuture = Http().bindAndHandle(Router(), "localhost", 3000)
+  val bindingFuture = Http().bindAndHandle(Router(), "localhost", 80)
 }
