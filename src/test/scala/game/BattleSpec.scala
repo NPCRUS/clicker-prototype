@@ -4,8 +4,8 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 
 class BattleSpec extends AnyWordSpecLike with Matchers {
-  val knife: Weapon = Weapon("knife", 920, 2, false)
-  val pitchfork: Weapon = Weapon("pitchfork", 2300,5, true)
+  val knife: Weapon = Dagger("knife", 920, 2)
+  val pitchfork: Weapon = Halberd("pitchfork", 2300,5)
 
   val pawn1: Pawn = Pawn("Mate", 40, List(knife), ArmorSet.empty)
   val pawn2: Pawn = Pawn("John", 40, List(pitchfork), ArmorSet.empty)

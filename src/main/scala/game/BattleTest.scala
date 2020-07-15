@@ -1,8 +1,9 @@
 package game
+import game.WeaponType.WeaponType
 
 object BattleTest extends App {
-  val knife = Weapon("knife", 920, 2, twoHanded = false)
-  val pitchfork = Weapon("pitchfork", 2300, 5, twoHanded = true)
+  val knife = Dagger("knife", 920, 2)
+  val pitchfork = Halberd("pitchfork", 2300, 5)
 
   val body = Body("fucking great armor", 1, 3)
   val armorSet = new ArmorSet(None, Some(body), None, None, None, None, None, None)

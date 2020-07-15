@@ -1,5 +1,8 @@
 package game
 
+import game.ArmorType.ArmorType
+import game.WeaponType.WeaponType
+
 import scala.util.Random
 
 trait Item {
@@ -8,13 +11,24 @@ trait Item {
   def _type: String
 }
 
-case class Weapon(
-  name: String,
-  cd: Int,
-  baseDamage: Int,
-  twoHanded: Boolean,
-) extends Item {
+trait Handleable {
+  def twoHanded: Boolean
+}
+
+trait OneHanded extends Handleable {
+  override def twoHanded: Boolean = false
+}
+
+trait TwoHanded extends Handleable {
+  override def twoHanded: Boolean = true
+}
+
+trait Weapon extends Item {
+  def weaponType: WeaponType.WeaponType
+  def baseDamage: Int
+
   override def _type: String = "weapon"
+
   def getDamage: Int = {
     val damageMultiplier: Double = Random.between(85, 115).toDouble / 100
     val finalDamage = (baseDamage * damageMultiplier).round.toInt
@@ -22,7 +36,51 @@ case class Weapon(
 
     finalDamage
   }
+}
 
+object WeaponType extends Enumeration {
+  type WeaponType = Value
+  val Scepter, Mace, Axe, Sword, Bow, Dagger, Staff, Wand, Polearm = Value
+}
+
+case class OneHandedSword(
+  name: String,
+  cd: Int,
+  baseDamage: Int
+) extends Weapon with OneHanded {
+  override def weaponType: WeaponType = WeaponType.Sword
+}
+
+case class TwoHandedSword(
+  name: String,
+  cd: Int,
+  baseDamage: Int
+) extends Weapon with TwoHanded {
+  override def weaponType: WeaponType = WeaponType.Sword
+}
+
+case class Dagger(
+  name: String,
+  cd: Int,
+  baseDamage: Int
+) extends Weapon with OneHanded {
+  override def weaponType: WeaponType = WeaponType.Dagger
+}
+
+case class Spear(
+  name: String,
+  cd: Int,
+  baseDamage: Int
+) extends Weapon with OneHanded {
+  override def weaponType: WeaponType = WeaponType.Polearm
+}
+
+case class Halberd(
+  name: String,
+  cd: Int,
+  baseDamage: Int
+) extends Weapon with TwoHanded {
+  override def weaponType: WeaponType = WeaponType.Polearm
 }
 
 trait Armor extends Item {
@@ -34,7 +92,7 @@ trait Armor extends Item {
 
 object ArmorType extends Enumeration {
   type ArmorType = Value
-  val Helmet, Body, Gloves, Boots, Belt, Amulet, Ring = Value
+  val Helmet, Body, Gloves, Boots, Belt, Amulet, Ring, Shield = Value
 }
 
 case class Helmet(
@@ -42,7 +100,7 @@ case class Helmet(
   cd: Int,
   armor: Int
 ) extends Armor {
-  val armorType: ArmorType.ArmorType = ArmorType.Helmet
+  override def armorType: ArmorType = ArmorType.Helmet
 }
 
 case class Body(
@@ -50,7 +108,7 @@ case class Body(
   cd: Int,
   armor: Int
 ) extends Armor {
-  val armorType: ArmorType.ArmorType = ArmorType.Body
+  override def armorType: ArmorType = ArmorType.Body
 }
 
 case class Gloves(
@@ -58,7 +116,7 @@ case class Gloves(
   cd: Int,
   armor: Int
 ) extends Armor {
-  val armorType: ArmorType.ArmorType = ArmorType.Gloves
+  override def armorType: ArmorType = ArmorType.Gloves
 }
 
 case class Boots(
@@ -66,7 +124,7 @@ case class Boots(
   cd: Int,
   armor: Int
 ) extends Armor {
-  val armorType: ArmorType.ArmorType = ArmorType.Boots
+  override def armorType: ArmorType = ArmorType.Boots
 }
 
 case class Belt(
@@ -74,7 +132,7 @@ case class Belt(
   cd: Int,
   armor: Int
 ) extends Armor {
-  val armorType: ArmorType.ArmorType = ArmorType.Belt
+  override def armorType: ArmorType = ArmorType.Belt
 }
 
 case class Amulet(
@@ -82,7 +140,7 @@ case class Amulet(
   cd: Int,
   armor: Int
 ) extends Armor {
-  val armorType: ArmorType.ArmorType = ArmorType.Amulet
+  override def armorType: ArmorType = ArmorType.Amulet
 }
 
 case class Ring(
@@ -90,5 +148,14 @@ case class Ring(
   cd: Int,
   armor: Int
 ) extends Armor {
-  val armorType: ArmorType.ArmorType = ArmorType.Ring
+  override def armorType: ArmorType = ArmorType.Ring
 }
+
+case class Shield(
+  name: String,
+  cd: Int,
+  armor: Int
+) extends Armor with OneHanded {
+  override def armorType: ArmorType = ArmorType.Ring
+}
+

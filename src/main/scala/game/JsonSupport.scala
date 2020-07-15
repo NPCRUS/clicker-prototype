@@ -2,6 +2,7 @@ package game
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import game.ArmorType.ArmorType
+import game.WeaponType.WeaponType
 import spray.json._
 
 object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
@@ -14,6 +15,17 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
       case unknown => deserializationError(s"json deserialize error: $unknown")
     }
   }
+
+  implicit object WeaponTypeFormat extends RootJsonFormat[WeaponType.WeaponType] {
+    override def write(obj: WeaponType): JsValue = JsString(obj.toString)
+
+    override def read(json: JsValue): WeaponType = json match {
+      case JsString(str) => WeaponType.withName(str)
+      case unknown => deserializationError(s"json deserialize error: $unknown")
+    }
+  }
+
+  // HANDLAEBLE
 
   // ARMOR
   class ArmorTypedProtocol[T <: Armor](
@@ -52,36 +64,91 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
       JsObject((obj match {
         case h: Helmet => h.toJson
         case b: Body => b.toJson
+        case g: Gloves => g.toJson
+        case boo: Boots => boo.toJson
+        case b: Belt => b.toJson
+        case a: Amulet => a.toJson
+        case r: Ring => r.toJson
         case unknown => deserializationError(s"json deserialize error: $unknown")
       }).asJsObject.fields)
 
-    override def read(json: JsValue): Armor =
-      json.asJsObject.getFields("armorType") match {
-        case Seq(JsString("helmet")) => json.convertTo[Helmet]
-        case Seq(JsString("body")) => json.convertTo[Body]
+    override def read(json: JsValue): Armor = {
+      val armorType = json.asJsObject.getFields("armorType") match {
+        case Seq(JsString(m)) => ArmorType.withName(m)
+        case unknown => deserializationError(s"json deserialize error: $unknown")
       }
+
+      armorType match {
+        case ArmorType.Helmet => json.convertTo[Helmet]
+        case ArmorType.Body => json.convertTo[Body]
+        case ArmorType.Gloves => json.convertTo[Gloves]
+        case ArmorType.Boots => json.convertTo[Boots]
+        case ArmorType.Belt => json.convertTo[Belt]
+        case ArmorType.Amulet => json.convertTo[Amulet]
+        case ArmorType.Ring => json.convertTo[Ring]
+      }
+    }
   }
 
   // WEAPON
-  implicit object WeaponFormat extends RootJsonFormat[Weapon] {
-    override def write(obj: Weapon): JsValue = {
+  class WeaponTypedProtocol[T <: Weapon with Handleable](
+    factory: (String, Int, Int) => T
+  ) extends RootJsonFormat[T] {
+    override def write(obj: T): JsValue = {
       JsObject(
         "name" -> JsString(obj.name),
         "cd" -> JsNumber(obj.cd),
         "baseDamage" -> JsNumber(obj.baseDamage),
-        "twoHanded" -> JsBoolean(obj.twoHanded),
+        "weaponType" -> obj.weaponType.toJson,
         "_type" -> JsString(obj._type),
+        "twoHanded" -> JsBoolean(obj.twoHanded)
       )
     }
 
-    override def read(json: JsValue): Weapon = {
+    override def read(json: JsValue): T = {
       val fields = json.asJsObject.fields
-      Weapon(
+      factory(
         fields("name").convertTo[String],
         fields("cd").convertTo[Int],
-        fields("baseDamage").convertTo[Int],
-        fields("twoHanded").convertTo[Boolean]
+        fields("baseDamage").convertTo[Int]
       )
+    }
+  }
+  implicit val oneHandedSwordProtocol: RootJsonFormat[OneHandedSword] = new WeaponTypedProtocol[OneHandedSword](OneHandedSword.apply)
+  implicit val twoHandedSwordProtocol: RootJsonFormat[TwoHandedSword] = new WeaponTypedProtocol[TwoHandedSword](TwoHandedSword.apply)
+  implicit val daggerProtocol: RootJsonFormat[Dagger] = new WeaponTypedProtocol[Dagger](Dagger.apply)
+  implicit val spearProtocol: RootJsonFormat[Spear] = new WeaponTypedProtocol[Spear](Spear.apply)
+  implicit val HalberdProtocol: RootJsonFormat[Halberd] = new WeaponTypedProtocol[Halberd](Halberd.apply)
+
+  implicit object WeaponFormat extends RootJsonFormat[Weapon] {
+    override def write(obj: Weapon): JsValue =
+      JsObject((obj match {
+        case ohs: OneHandedSword => ohs.toJson
+        case ths: TwoHandedSword => ths.toJson
+        case d: Dagger => d.toJson
+        case s: Spear => s.toJson
+        case h: Halberd => h.toJson
+        case unknown => deserializationError(s"json deserialize error: $unknown")
+      }).asJsObject.fields)
+
+    override def read(json: JsValue): Weapon = {
+      val fields = json.asJsObject.fields
+      val weaponType = fields.get("weaponType") match {
+        case Some(JsString(s)) => WeaponType.withName(s)
+        case unknown => deserializationError(s"json deserialize error: $unknown")
+      }
+      val twoHanded = fields.get("twoHanded") match {
+        case Some(JsBoolean(b)) => b
+        case unknown => deserializationError(s"json deserialize error: $unknown")
+      }
+
+      (weaponType, twoHanded) match {
+        case (WeaponType.Sword, false) => json.convertTo[OneHandedSword]
+        case (WeaponType.Sword, true) => json.convertTo[TwoHandedSword]
+        case (WeaponType.Dagger, false) => json.convertTo[Dagger]
+        case (WeaponType.Polearm, false) => json.convertTo[Spear]
+        case (WeaponType.Polearm, true) => json.convertTo[Halberd]
+      }
     }
   }
 
