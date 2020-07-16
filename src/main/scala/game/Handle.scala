@@ -1,32 +1,45 @@
 package game
+import game.HandleType.HandleType
+
+object HandleType extends Enumeration {
+  type HandleType = Value
+  val DualHand, TwoHand, OneHand = Value
+}
 
 trait Handle {
   def getWeapons: List[Item]
+  def _type: HandleType.HandleType
 }
+
+class IncompatibleHandleException extends Throwable
 
 case class DualHandle(
-  mainHand: Option[Weapon with OneHanded],
-  offHand: Option[Weapon with OneHanded])
-extends Handle {
-  override def getWeapons: List[Weapon] =
-    (List.empty :+ mainHand :+ offHand)
-      .filter(_.isDefined)
-      .map(_.get)
+  mainHand: Weapon,
+  offHand: Weapon
+) extends Handle {
+  if(mainHand.twoHanded || offHand.twoHanded) throw new IncompatibleHandleException
+
+  override def _type: HandleType = HandleType.DualHand
+  override def getWeapons: List[Item] = List(mainHand,offHand)
 }
 
-case class ShieldHandle(
-  mainHand: Option[Weapon with OneHanded],
-  offHand: Option[Shield with OneHanded]
+case class OneHandedHandle(
+  mainHand: Weapon,
+  offHand: Option[Shield]
 ) extends Handle {
+  if(mainHand.twoHanded) throw new IncompatibleHandleException
+
+  override def _type: HandleType = HandleType.OneHand
   override def getWeapons: List[Item] =
-    if(mainHand.isDefined) List(mainHand.get)
-    else List.empty
+    if(offHand.isDefined) List(mainHand, offHand.get)
+    else List(mainHand)
 }
 
-case class TwoHanHandle(
-  mainHand: Option[Weapon with TwoHanded]
+case class TwoHandedHandle(
+  mainHand: Weapon
 ) extends Handle {
-  override def getWeapons: List[Weapon] =
-    if(mainHand.isDefined) List(mainHand.get)
-    else List.empty
+  if(!mainHand.twoHanded) throw new IncompatibleHandleException
+
+  override def _type: HandleType = HandleType.TwoHand
+  override def getWeapons: List[Item] = List(mainHand)
 }

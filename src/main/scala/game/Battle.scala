@@ -2,12 +2,12 @@ package game
 
 import scala.annotation.tailrec
 
-class Battle(opponent1: Pawn, opponent2: Pawn) {
+class Battle(pawn1: Pawn, pawn2: Pawn) {
   val itemsCombined: List[CalcItem] =
-    for(comb <- opponent1.items.map((_, opponent1)) ++ opponent2.items.map((_, opponent2)))
-      yield CalcItem(comb._2, comb._1, comb._1.cd)
+    (pawn1.getAllActiveItems.map((pawn1, _)) ++ pawn2.getAllActiveItems.map((pawn2, _)))
+    .map(t => CalcItem(t._1, t._2, t._2.cd))
 
-  val opponents: (Opponent, Opponent) = (Opponent.fromPawn(opponent1), Opponent.fromPawn(opponent2))
+  val opponents: (Opponent, Opponent) = (Opponent.fromPawn(pawn1), Opponent.fromPawn(pawn2))
 
   def calculate(): List[Action] = {
     @tailrec
@@ -18,22 +18,34 @@ class Battle(opponent1: Pawn, opponent2: Pawn) {
 
       if(opponents._1.hp <= 0 || opponents._2.hp <= 0) actions
       else {
-        val action: Action = createAction(opponents, currentCalc, timestamp + currentCalc.cd)
+        val actionOption = createAction(opponents, currentCalc, timestamp + currentCalc.cd)
+        val newActions = {
+          if(actionOption.isDefined) actions :+ actionOption.get
+          else actions
+        }
+        val newOpponents = {
+          if(actionOption.isDefined) (actionOption.get.init, actionOption.get.target)
+          else opponents
+        }
+
         _calculate(
-          (action.init, action.target),
-          actions :+ action,
+          newOpponents,
+          newActions,
           ordered.tail.map(t => t.withNewCd(t.cd - currentCalc.cd)) :+ currentCalc.withNewCd(currentItem.cd),
           timestamp + currentCalc.cd
         )
       }
-    }
+      }
 
     _calculate(opponents, List.empty, itemsCombined)
   }
 
-  private def createAction(op: (Opponent, Opponent), ci: CalcItem, timestamp: Int): Action = {
+  private def createAction(op: (Opponent, Opponent), ci: CalcItem, timestamp: Int): Option[Action] = {
     ci.item match {
-      case w: Weapon => attack(op, ci, timestamp + ci.cd, w)
+      case w: Weapon => Some(attack(op, ci, timestamp + ci.cd, w))
+      case a: Armor =>
+        println(s"we don't know how to process this type of item yet ${a}")
+        None
     }
   }
 

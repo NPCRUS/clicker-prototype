@@ -11,21 +11,18 @@ trait Item {
   def _type: String
 }
 
-trait Handleable {
-  def twoHanded: Boolean
-}
-
-trait OneHanded extends Handleable {
-  override def twoHanded: Boolean = false
-}
-
-trait TwoHanded extends Handleable {
-  override def twoHanded: Boolean = true
+object Weapon {
+  def unapply(arg: Weapon): Option[Weapon] = arg match {
+    case s: Sword => Some(s)
+    case d: Dagger => Some(d)
+    case p: Polearm => Some(p)
+  }
 }
 
 trait Weapon extends Item {
   def weaponType: WeaponType.WeaponType
   def baseDamage: Int
+  def twoHanded: Boolean
 
   override def _type: String = "weapon"
 
@@ -43,19 +40,12 @@ object WeaponType extends Enumeration {
   val Scepter, Mace, Axe, Sword, Bow, Dagger, Staff, Wand, Polearm = Value
 }
 
-case class OneHandedSword(
+case class Sword(
   name: String,
   cd: Int,
-  baseDamage: Int
-) extends Weapon with OneHanded {
-  override def weaponType: WeaponType = WeaponType.Sword
-}
-
-case class TwoHandedSword(
-  name: String,
-  cd: Int,
-  baseDamage: Int
-) extends Weapon with TwoHanded {
+  baseDamage: Int,
+  twoHanded: Boolean
+) extends Weapon {
   override def weaponType: WeaponType = WeaponType.Sword
 }
 
@@ -63,23 +53,17 @@ case class Dagger(
   name: String,
   cd: Int,
   baseDamage: Int
-) extends Weapon with OneHanded {
+) extends Weapon {
   override def weaponType: WeaponType = WeaponType.Dagger
+  override def twoHanded: Boolean = false
 }
 
-case class Spear(
+case class Polearm(
   name: String,
   cd: Int,
-  baseDamage: Int
-) extends Weapon with OneHanded {
-  override def weaponType: WeaponType = WeaponType.Polearm
-}
-
-case class Halberd(
-  name: String,
-  cd: Int,
-  baseDamage: Int
-) extends Weapon with TwoHanded {
+  baseDamage: Int,
+  twoHanded: Boolean
+) extends Weapon {
   override def weaponType: WeaponType = WeaponType.Polearm
 }
 
@@ -155,7 +139,7 @@ case class Shield(
   name: String,
   cd: Int,
   armor: Int
-) extends Armor with OneHanded {
+) extends Armor {
   override def armorType: ArmorType = ArmorType.Ring
 }
 
