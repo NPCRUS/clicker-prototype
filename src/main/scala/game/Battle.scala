@@ -35,7 +35,6 @@ class Battle(pawn1: Pawn, pawn2: Pawn) {
           case i: ItemApplicable => preparedApplicable :+ i.withNewCd(i.item.cd)
         }
 
-        println()
         _calculate(
           newOpponents,
           actions ++ applicableResult.actions,

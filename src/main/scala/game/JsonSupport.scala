@@ -337,7 +337,26 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
 
   // PAWNS/OPPONENTS
   implicit val initialPropertiesProtocol: RootJsonFormat[InitialProperties] = jsonFormat12(InitialProperties)
-  implicit val pawnProtocol: RootJsonFormat[Pawn] = jsonFormat4(Pawn.apply)
+  implicit object PawnFormat extends RootJsonFormat[Pawn] {
+    override def write(obj: Pawn): JsValue = {
+      JsObject(
+        "name" -> JsString(obj.name),
+        "handle" -> obj.handle.toJson,
+        "armorSet" -> obj.armorSet.toJson,
+        "initProperties" -> obj.initProperties.toJson
+      )
+    }
+
+    override def read(json: JsValue): Pawn = {
+      val fields = json.asJsObject.fields
+       Pawn(
+         fields("name").convertTo[String],
+         fields("handle").convertTo[Handle],
+         fields("armorSet").convertTo[ArmorSet],
+         fields("initProperties").convertTo[InitialProperties]
+       )
+    }
+  }
   implicit object OpponentFormat extends RootJsonFormat[Opponent] {
     override def write(obj: Opponent): JsValue = {
       JsObject(
