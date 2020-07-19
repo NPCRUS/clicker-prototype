@@ -6,27 +6,67 @@ trait Action {
   def item: Item
   def timestamp: Int
   def _type: String
+
+  def timestampStr: String = s"${timestamp.toDouble / 1000}s"
+}
+
+object AvoidanceType extends Enumeration {
+  type AvoidanceType = Value
+  val Evasion, Parry, Block = Value
 }
 
 object Attack {
-  def apply(init: Opponent, target: Opponent, item: Weapon, timestamp: Int): Attack = {
-    val weaponBaseDamage = item.getDamage
-    val initialInputDamage = init.calculateDamage(item, weaponBaseDamage)
-    val (finalDamage, newTarget) = target.dealDamage(initialInputDamage)
-    new Attack(init, newTarget, item, timestamp, finalDamage)
+  def apply(init: Opponent, target: Opponent, item: Weapon, timestamp: Int): Action = {
+    if(target.isEvaded(init)) {
+      Avoidance(init, target, item, timestamp, AvoidanceType.Evasion)
+    } else if(item.isPhysical && target.isParried) {
+      Avoidance(init,target, item, timestamp, AvoidanceType.Parry)
+    } else if(item.isPhysical && target.isBlocked) {
+      Avoidance(init, target, item, timestamp, AvoidanceType.Block)
+    } else {
+      val weaponBaseDamage = item.getDamage
+      val initialInputDamage = init.calculateDamage(item, weaponBaseDamage)
+      val (finalDamage, newTarget) = target.dealDamage(init, item.damageType, initialInputDamage)
+      DamageDeal(init, newTarget, item, timestamp, finalDamage)
+    }
   }
 }
 
-case class Attack(
+case class DamageDeal(
   init: Opponent,
   target: Opponent,
   item: Item,
   timestamp: Int,
   damage: Int,
-  _type: String = "attack"
+  _type: String = "damage"
 ) extends Action {
   override def toString: String =
-    s"${init.pawn.name}(${init.hp}hp) attacked ${target.pawn.name}(${target.hp}) with ${item.name} dealing ${damage} damage, ${timestamp.toDouble / 1000}s"
+    s"${init.toString} inflicted ${damage}damage on ${target.toString} with ${item.toString}, ${timestampStr}"
+}
+
+case class Avoidance(
+  init: Opponent,
+  target: Opponent,
+  item: Item,
+  timestamp: Int,
+  avoidanceType: AvoidanceType.AvoidanceType,
+  _type: String = "avoidance"
+) extends Action {
+  override def toString: String =
+    s"${target.toString} performed an ${avoidanceType.toString} of attack from ${init.toString}, ${timestampStr}"
+}
+
+case class OneTimeEffectApplication(
+  init: Opponent,
+  target: Opponent,
+  item: Item,
+  timestamp: Int,
+  effect: OneTimeActiveEffect,
+  _type: String = "effect"
+) extends Action {
+  override def toString: String = {
+    s"${init.toString} applied ${effect.change} ${effect.target.toString} on ${target.toString}, ${timestampStr}"
+  }
 }
 
 

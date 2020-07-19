@@ -9,6 +9,7 @@ object HandleType extends Enumeration {
 trait Handle {
   def getWeapons: List[Item]
   def _type: HandleType.HandleType
+  def getShield: Option[Shield]
 }
 
 class IncompatibleHandleException extends Throwable
@@ -21,6 +22,7 @@ case class DualHandle(
 
   override def _type: HandleType = HandleType.DualHand
   override def getWeapons: List[Item] = List(mainHand,offHand)
+  override def getShield: Option[Shield] = None
 }
 
 case class OneHandedHandle(
@@ -33,6 +35,10 @@ case class OneHandedHandle(
   override def getWeapons: List[Item] =
     if(offHand.isDefined) List(mainHand, offHand.get)
     else List(mainHand)
+
+  override def getShield: Option[Shield] =
+    if(offHand.isDefined) offHand
+    else None
 }
 
 case class TwoHandedHandle(
@@ -42,4 +48,5 @@ case class TwoHandedHandle(
 
   override def _type: HandleType = HandleType.TwoHand
   override def getWeapons: List[Item] = List(mainHand)
+  override def getShield: Option[Shield] = None
 }

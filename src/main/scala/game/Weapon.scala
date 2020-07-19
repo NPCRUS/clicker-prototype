@@ -1,0 +1,81 @@
+package game
+
+import game.DamageType.DamageType
+import game.WeaponType.WeaponType
+
+import scala.util.Random
+
+object Weapon {
+  def unapply(arg: Weapon): Option[Weapon] = arg match {
+    case s: Sword => Some(s)
+    case d: Dagger => Some(d)
+    case p: Polearm => Some(p)
+  }
+}
+
+trait Weapon extends Item {
+  def weaponType: WeaponType.WeaponType
+  def baseDamage: Int
+  def twoHanded: Boolean
+  def damageType: DamageType.DamageType
+
+  override def _type: String = "weapon"
+
+  def getDamage: Int = {
+    val damageMultiplier: Double = Random.between(85, 115).toDouble / 100
+    val finalDamage = (baseDamage * damageMultiplier).round.toInt
+    // all crit chances and crit values goes to game.Opponent
+
+    finalDamage
+  }
+
+  def isPhysical: Boolean = damageType == DamageType.Physical
+
+  override def toString: String = s"${name}(${weaponType.toString}, ${damageType})"
+}
+
+object WeaponType extends Enumeration {
+  type WeaponType = Value
+  val Scepter, Mace, Axe, Sword, Bow, Dagger, Staff, Wand, Polearm = Value
+}
+
+object DamageType extends Enumeration {
+  type DamageType = Value
+  val Physical, Fire, Cold, Lightning = Value
+}
+
+case class Sword(
+  name: String,
+  cd: Int,
+  baseDamage: Int,
+  twoHanded: Boolean,
+  damageType: DamageType = DamageType.Physical,
+  passiveEffects: List[PassiveEffect] = List.empty,
+  activeEffects: List[ActiveEffect] = List.empty
+) extends Weapon {
+  override def weaponType: WeaponType = WeaponType.Sword
+}
+
+case class Dagger(
+  name: String,
+  cd: Int,
+  baseDamage: Int,
+  damageType: DamageType = DamageType.Physical,
+  passiveEffects: List[PassiveEffect] = List.empty,
+  activeEffects: List[ActiveEffect] = List.empty
+) extends Weapon {
+  override def weaponType: WeaponType = WeaponType.Dagger
+  override def twoHanded: Boolean = false
+}
+
+case class Polearm(
+  name: String,
+  cd: Int,
+  baseDamage: Int,
+  twoHanded: Boolean,
+  damageType: DamageType = DamageType.Physical,
+  passiveEffects: List[PassiveEffect] = List.empty,
+  activeEffects: List[ActiveEffect] = List.empty
+) extends Weapon {
+  override def weaponType: WeaponType = WeaponType.Polearm
+}
