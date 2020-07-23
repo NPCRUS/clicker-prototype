@@ -379,12 +379,16 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   // ACTIONS
   implicit val damageDealProtocol: RootJsonFormat[DamageDeal] = jsonFormat6(DamageDeal.apply)
   implicit val avoidanceProtocol: RootJsonFormat[Avoidance] = jsonFormat6(Avoidance.apply)
+  implicit val effectApplicationProtocol: RootJsonFormat[EffectApplication] = jsonFormat6(EffectApplication.apply)
+  implicit val effectEndProtocol: RootJsonFormat[EffectEnd] = jsonFormat6(EffectEnd)
 
   implicit object ActionFormat extends RootJsonFormat[Action] {
     override def write(obj: Action): JsValue =
       JsObject((obj match {
         case a: DamageDeal => a.toJson
         case a: Avoidance => a.toJson
+        case ea: EffectApplication => ea.toJson
+        case ee: EffectEnd => ee.toJson
         case unknown => deserializationError(s"json deserialize error: $unknown")
       }).asJsObject.fields)
 
@@ -392,6 +396,8 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
       json.asJsObject.getFields("_type") match {
         case Seq(JsString("damage")) => json.convertTo[DamageDeal]
         case Seq(JsString("avoidance")) => json.convertTo[Avoidance]
+        case Seq(JsString("effect_application")) => json.convertTo[EffectApplication]
+        case Seq(JsString("effect_end")) => json.convertTo[EffectEnd]
       }
   }
 }

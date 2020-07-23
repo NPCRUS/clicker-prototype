@@ -29,12 +29,13 @@ class Battle(pawn1: Pawn, pawn2: Pawn) {
         // work with
         val preparedApplicable = ordered.tail.map(t => t.withNewCd(t.cd - currentApplicable.cd))
         val applicableApplied = currentApplicable match {
-          case p: PeriodicEffectApplicable if(p.ticks > 1) => preparedApplicable :+ p.doTick
+          case p: PeriodicEffectApplicable => preparedApplicable
           case l: LastingEffectApplicable => preparedApplicable
           case o: OneTimeEffectApplicable => preparedApplicable
           case i: ItemApplicable => preparedApplicable :+ i.withNewCd(i.item.cd)
         }
 
+        println()
         _calculate(
           newOpponents,
           actions ++ applicableResult.actions,
@@ -86,24 +87,28 @@ class Battle(pawn1: Pawn, pawn2: Pawn) {
     )
   }
 
-//  private def applyEffects(
-//    af: List[ActiveEffect],
-//    initOp: Opponents,
-//    timestamp: Int,
-//    actions: List[Option[Action]] = List.empty
-//  ): (List[Option[Action]], Opponents) = {
-//    if(af.isEmpty) (actions, initOp)
-//    else {
-//      val effect = af.head
-//      val newAction = Effect(initOp.init, initOp.target, effect, timestamp)
-//      val newOp = chooseNewerOp(newAction, initOp)
-//      applyEffects(af.tail, newOp, timestamp, actions :+ Some(newAction))
-//    }
-//  }
-
   private def processPeriodic(op: Opponents, a: PeriodicEffectApplicable, timestamp: Int): ApplicableResult = ???
 
-  private def processLasting(op: Opponents, a: LastingEffectApplicable, timestamp: Int): ApplicableResult = ???
+  private def processLasting(op: Opponents, a: LastingEffectApplicable, timestamp: Int): ApplicableResult = {
+    val target = if(a.activeEffect.self) op.init else op.target
+    val newTarget =
+      if(a.end) target.removeActiveEffect(a.activeEffect)
+      else target.applyActiveEffect(a.activeEffect)
+
+    val action =
+      if(a.end) EffectEnd(op.init, newTarget, a.source, timestamp, a.activeEffect)
+      else EffectApplication(op.init, newTarget, a.source, timestamp, a.activeEffect)
+
+    val subApplicable =
+      if(a.end) List.empty
+      else List(a.finish)
+
+    ApplicableResult(
+      List(action),
+      chooseNewerOp(action, op),
+      subApplicable
+    )
+  }
 
   private def processOneTime(op: Opponents, a: OneTimeEffectApplicable, timestamp: Int): ApplicableResult = {
     // choose target
@@ -112,7 +117,7 @@ class Battle(pawn1: Pawn, pawn2: Pawn) {
     a.activeEffect.target match {
       case EffectTargetType.Hp => {
         val newTarget = target.addHp(a.activeEffect.change)
-        val action = OneTimeEffectApplication(op.init, newTarget, a.source, timestamp, a.activeEffect)
+        val action = EffectApplication(op.init, newTarget, a.source, timestamp, a.activeEffect)
         ApplicableResult(
           List(action),
           chooseNewerOp(action, op),
@@ -153,9 +158,10 @@ case class PeriodicEffectApplicable(pawn: Pawn, source: Item, activeEffect: Peri
   def doTick: PeriodicEffectApplicable = PeriodicEffectApplicable(pawn, source, activeEffect, ticks - 1, tickCd, tickCd)
 }
 
-case class LastingEffectApplicable(pawn: Pawn, source: Item, activeEffect: LastingActiveEffect, cd: Int)
+case class LastingEffectApplicable(pawn: Pawn, source: Item, activeEffect: LastingActiveEffect, cd: Int, end: Boolean = false)
   extends Applicable {
   override def withNewCd(newCd: Int): Applicable = LastingEffectApplicable(pawn, source, activeEffect, newCd)
+  def finish: LastingEffectApplicable = LastingEffectApplicable(pawn, source, activeEffect, activeEffect.duration, end = true)
 }
 
 case class ApplicableResult(

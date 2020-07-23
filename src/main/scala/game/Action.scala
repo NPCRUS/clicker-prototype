@@ -41,7 +41,7 @@ case class DamageDeal(
   _type: String = "damage"
 ) extends Action {
   override def toString: String =
-    s"${init.toString} inflicted ${damage}damage on ${target.toString} with ${item.toString}, ${timestampStr}"
+    s"${init.toString} inflicted ${damage} damage on ${target.toString} with ${item.toString}, ${timestampStr}"
 }
 
 case class Avoidance(
@@ -56,17 +56,34 @@ case class Avoidance(
     s"${target.toString} performed an ${avoidanceType.toString} of attack from ${init.toString}, ${timestampStr}"
 }
 
-case class OneTimeEffectApplication(
+case class EffectApplication(
   init: Opponent,
   target: Opponent,
   item: Item,
   timestamp: Int,
-  effect: OneTimeActiveEffect,
-  _type: String = "effect"
+  effect: ActiveEffect,
+  _type: String = "effect_application"
 ) extends Action {
   override def toString: String = {
-    s"${init.toString} applied ${effect.change} ${effect.target.toString} on ${target.toString}, ${timestampStr}"
+    val e = effect match {
+      case o: OneTimeActiveEffect => s"onetime ${o.change} ${o.target.toString}"
+      case l: LastingActiveEffect => s"${l.change} ${l.target.toString} for ${l.duration}"
+      case p: PeriodicActiveEffect => s"${p.change} ${p.target.toString} for ${p.ticks}"
+    }
+    s"${init.toString} applied ${e} to ${target.toString}, ${timestampStr}"
   }
+}
+
+case class EffectEnd(
+  init: Opponent,
+  target: Opponent,
+  item: Item,
+  timestamp: Int,
+  effect: ActiveEffect,
+  _type: String = "effect_end"
+) extends Action {
+  override def toString: String =
+    s"${effect._type}(${effect.change} ${effect.target.toString}) is ended on ${target.toString}, ${timestampStr}"
 }
 
 
