@@ -13,9 +13,9 @@ class MeRoute {
     get {
       Authenticate.customAuthorization{ token =>
         onComplete(
-          AppConfig.db.run(Schemas.getUserByOpaqueId(token.opaque_user_id)).flatMap {
+          AppConfig.db.run(Schemas.getUserByUserId(token.user_id.toInt)).flatMap {
             case Some(u) =>
-              val user = User(u.id, u.opaqueUserId, u.chanelId, u.role, u.isUnlinked)
+              val user = User(u.id, u.opaqueUserId, u.chanelId, u.role, u.isUnlinked, u.userId)
               Future(Some(user))
             case None => Future(None)
           }.flatMap {

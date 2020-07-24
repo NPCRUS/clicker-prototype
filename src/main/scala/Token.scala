@@ -6,6 +6,7 @@ case class RawToken(
 case class Token(
   exp: Long,
   opaque_user_id: String,
+  user_id: String,
   channel_id: String,
   role: String,
   is_unlinked: Boolean,

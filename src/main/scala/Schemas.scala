@@ -10,13 +10,14 @@ object Schemas {
     def channelId = column[String]("channel_id")
     def role = column[String]("role")
     def isUnlinked = column[Boolean]("is_unlinked")
+    def userId = column[Int]("user_id")
 
-    def * = (id.?, opaqueUserId, channelId, role, isUnlinked) <> (User.tupled, User.unapply)
+    def * = (id.?, opaqueUserId, channelId, role, isUnlinked, userId) <> (User.tupled, User.unapply)
   }
 
   val users = TableQuery[Users]
 
-  def getUserByOpaqueId(opaqueId: String) = Schemas.users.filter(_.opaqueUserId === opaqueId)
+  def getUserByUserId(userId: Int) = Schemas.users.filter(_.userId === userId)
     .result
     .headOption
 
@@ -24,7 +25,7 @@ object Schemas {
     AppConfig.db.run(
       (Schemas.users returning Schemas.users.map(_.id)
         into ((user, id) => user.copy(id = Some(id)))
-        ) += User(None, token.opaque_user_id, token.channel_id, token.role, token.is_unlinked)
+        ) += User(None, token.opaque_user_id, token.channel_id, token.role, token.is_unlinked, token.user_id.toInt)
     )
   }
 }
@@ -34,6 +35,7 @@ case class User(
   opaqueUserId: String,
   chanelId: String,
   role: String,
-  isUnlinked: Boolean
+  isUnlinked: Boolean,
+  userId: Int
 )
 
