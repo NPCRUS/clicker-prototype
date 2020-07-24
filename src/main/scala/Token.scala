@@ -13,6 +13,6 @@ case class Token(
 )
 
 case class PubSubPerms(
-  listen: List[String],
-  send: List[String]
+  listen: Option[List[String]],
+  send: Option[List[String]]
 )

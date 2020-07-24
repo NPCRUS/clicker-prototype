@@ -23,10 +23,9 @@ object Authenticate extends Directives with SprayJsonSupport {
               val token = value.convertTo[Token]
               provide(token)
             } catch {
-              case _: Throwable => complete(StatusCodes.Unauthorized, "jwt token payload is malformed")
+              case ex: Throwable => complete(StatusCodes.Unauthorized, "jwt token payload is malformed")
             }
           case Failure(claim) =>
-            println()
             complete(StatusCodes.Unauthorized, "jwt token error")
         }
 
