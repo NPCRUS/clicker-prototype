@@ -3,20 +3,20 @@ package game
 object BattleTest extends App {
   val knife = Dagger(
     "knife",
-    cd = 5000,
-    15,
+    cd = 10000,
+    20,
     DamageType.Physical,
     List(PassiveEffect(EffectTargetType.ColdRes, 1000)),
-    List(LastingActiveEffect(ActiveEffectType.Lasting, EffectTargetType.Armor, chance = 1.0, change = -100, self = false, 6000)))
+    List(PeriodicActiveEffect(ActiveEffectType.Periodic, EffectTargetType.Armor, chance = 1.0, change = 50, self = true, 4, 2000)))
   val handle1 = OneHandedHandle(knife, None)
   val pawn1 = Pawn("Mate", handle1, ArmorSet.empty, InitialProperties())
 
   val pitchfork = Polearm(
     "pitchfork",
-    cd = 5000,
+    cd = 7000,
     15,
     twoHanded = true,
-    DamageType.Cold, List(PassiveEffect(EffectTargetType.ColdMit, 1000))
+    DamageType.Physical, List(PassiveEffect(EffectTargetType.ColdMit, 1000))
   )
   val handle2 = TwoHandedHandle(pitchfork)
   val body = Body("best", 10000, 100, List.empty)

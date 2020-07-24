@@ -20,19 +20,14 @@ class Battle(pawn1: Pawn, pawn2: Pawn) {
       val currentApplicable = ordered.head
 
       if(opponents.init.hp <= 0 || opponents.target.hp <= 0) actions
-      // else if(actions.length > 10) actions
       else {
         val applicableResult = processApplicable(opponents, currentApplicable, timestamp + currentApplicable.cd)
-
         val newOpponents = applicableResult.opponents
 
-        // work with
         val preparedApplicable = ordered.tail.map(t => t.withNewCd(t.cd - currentApplicable.cd))
         val applicableApplied = currentApplicable match {
-          case p: PeriodicEffectApplicable => preparedApplicable
-          case l: LastingEffectApplicable => preparedApplicable
-          case o: OneTimeEffectApplicable => preparedApplicable
           case i: ItemApplicable => preparedApplicable :+ i.withNewCd(i.item.cd)
+          case _ => preparedApplicable
         }
 
         println()
@@ -87,7 +82,26 @@ class Battle(pawn1: Pawn, pawn2: Pawn) {
     )
   }
 
-  private def processPeriodic(op: Opponents, a: PeriodicEffectApplicable, timestamp: Int): ApplicableResult = ???
+  private def processPeriodic(op: Opponents, a: PeriodicEffectApplicable, timestamp: Int): ApplicableResult = {
+    val target = if(a.activeEffect.self) op.init else op.target
+    val newTarget =
+      if(a.ticks == 0) target.removeActiveEffect(a.activeEffect)
+      else target.applyActiveEffect(a.activeEffect)
+
+    val action =
+      if(a.ticks == 0) EffectEnd(op.init, newTarget, a.source, timestamp, a.activeEffect)
+      else EffectApplication(op.init, newTarget, a.source, timestamp, a.activeEffect)
+
+    val subApplicable =
+      if(a.ticks == 0) List.empty
+      else List(a.doTick)
+
+    ApplicableResult(
+      List(action),
+      chooseNewerOp(action, op),
+      subApplicable
+    )
+  }
 
   private def processLasting(op: Opponents, a: LastingEffectApplicable, timestamp: Int): ApplicableResult = {
     val target = if(a.activeEffect.self) op.init else op.target
@@ -113,18 +127,14 @@ class Battle(pawn1: Pawn, pawn2: Pawn) {
   private def processOneTime(op: Opponents, a: OneTimeEffectApplicable, timestamp: Int): ApplicableResult = {
     // choose target
     val target = if(a.activeEffect.self) op.init else op.target
+    val newTarget = target.applyActiveEffect(a.activeEffect)
+    val action = EffectApplication(op.init, newTarget, a.source, timestamp, a.activeEffect)
 
-    a.activeEffect.target match {
-      case EffectTargetType.Hp => {
-        val newTarget = target.addHp(a.activeEffect.change)
-        val action = EffectApplication(op.init, newTarget, a.source, timestamp, a.activeEffect)
-        ApplicableResult(
-          List(action),
-          chooseNewerOp(action, op),
-          List.empty
-        )
-      }
-    }
+    ApplicableResult(
+      List(action),
+      chooseNewerOp(action, op),
+      List.empty
+    )
   }
 
   private def orderOpByApplicable(lastOp: Opponents, ci: Applicable): Opponents =

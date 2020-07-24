@@ -5,14 +5,13 @@ import game.EffectTargetType.EffectTargetType
 import scala.util.Random
 
 object Opponent {
-  def apply(pawn: Pawn, hp: Int): Opponent = new Opponent(pawn, hp)
-  def fromPawn(pawn: Pawn): Opponent = new Opponent(pawn, pawn.hp)
+  def fromPawn(pawn: Pawn): Opponent = new Opponent(pawn, pawn.hp, List.empty)
 }
 
 case class Opponent(
   pawn: Pawn,
   hp: Int,
-  activeEffects: List[ActiveEffect] = List.empty
+  activeEffects: List[ActiveEffect]
 ) {
   def calculateDamage(item: Weapon, baseDamage: Int): Int = {
     // logic for crits and any other sort of multipliers
@@ -22,13 +21,17 @@ case class Opponent(
   def removeActiveEffect(a: ActiveEffect): Opponent =
     Opponent(pawn, hp, activeEffects.filter(_ ne a))
 
-  def applyActiveEffect(a: ActiveEffect): Opponent =
-    Opponent(pawn, hp, activeEffects :+ a)
+  def applyActiveEffect(a: ActiveEffect): Opponent = {
+    a.target match {
+      case EffectTargetType.Hp => addHp(a.change)
+      case _ => Opponent(pawn, hp, activeEffects :+ a)
+    }
+  }
 
-  def addHp(addition: Int): Opponent = {
+  private def addHp(addition: Int): Opponent = {
     val newHp = hp + addition
-    if(newHp < pawn.hp) Opponent(pawn, newHp)
-    else Opponent(pawn, pawn.hp)
+    if(newHp < pawn.hp) Opponent(pawn, newHp, activeEffects)
+    else Opponent(pawn, pawn.hp, activeEffects)
   }
 
   private def nextRand: Double = Random.between(0, 100).toDouble * 0.01
@@ -46,7 +49,7 @@ case class Opponent(
       case _ => calculateMagicalDamage(attacker, damageType, damage)
     }
 
-    (actualDamage, new Opponent(pawn, hp - actualDamage))
+    (actualDamage, Opponent(pawn, hp - actualDamage, activeEffects))
   }
 
   private def calculatePhysicalDamage(attacker: Opponent, damage: Int): Int = {

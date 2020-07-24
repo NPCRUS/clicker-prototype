@@ -68,7 +68,9 @@ case class EffectApplication(
     val e = effect match {
       case o: OneTimeActiveEffect => s"onetime ${o.change} ${o.target.toString}"
       case l: LastingActiveEffect => s"${l.change} ${l.target.toString} for ${l.duration}"
-      case p: PeriodicActiveEffect => s"${p.change} ${p.target.toString} for ${p.ticks}"
+      case p: PeriodicActiveEffect =>
+        val ticksAmount = target.activeEffects.count(_ equals effect)
+        s"${p.change} ${p.target.toString} for ${ticksAmount} / ${p.ticks} ticks"
     }
     s"${init.toString} applied ${e} to ${target.toString}, ${timestampStr}"
   }
