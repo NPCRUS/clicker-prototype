@@ -1,6 +1,6 @@
 package game
 
-import game.EffectTargetType.EffectTargetType
+import game.items.{ArmorSet, EffectTargetType, Handle, Item, PassiveEffect}
 
 case class InitialProperties(
   hp: Int = 100,
@@ -27,7 +27,7 @@ case class Pawn(
   lazy val allPassiveEffects: List[PassiveEffect] =
     getAllItems.map(_.passiveEffects).reduce((c, acc) => acc ++ c)
 
-  private def getEffectChangeByType(targetT: EffectTargetType) =
+  private def getEffectChangeByType(targetT: EffectTargetType.Type) =
     allPassiveEffects.filter(_.target == targetT).map(_.change).sum
 
   lazy val hp: Int = getEffectChangeByType(EffectTargetType.Hp) + initProperties.hp

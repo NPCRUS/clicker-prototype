@@ -1,6 +1,6 @@
 package game
 
-import game.EffectTargetType.EffectTargetType
+import game.items.{ActiveEffect, DamageType, EffectTargetType, Weapon}
 
 import scala.util.Random
 
@@ -43,7 +43,7 @@ case class Opponent(
   def isBlocked: Boolean =
     pawn.handle.getShield.isDefined && ((nextRand - blockRate) < 0)
 
-  def dealDamage(attacker: Opponent, damageType: DamageType.DamageType, damage: Int): (Int, Opponent) = {
+  def dealDamage(attacker: Opponent, damageType: DamageType.Type, damage: Int): (Int, Opponent) = {
     val actualDamage = damageType match {
       case DamageType.Physical => calculatePhysicalDamage(attacker, damage)
       case _ => calculateMagicalDamage(attacker, damageType, damage)
@@ -59,7 +59,7 @@ case class Opponent(
     (damage * (1 - armorMitigation)).round.toInt
   }
 
-  private def calculateMagicalDamage(attacker: Opponent, damageType: DamageType.DamageType, damage: Int): Int = {
+  private def calculateMagicalDamage(attacker: Opponent, damageType: DamageType.Type, damage: Int): Int = {
     val (magicalResist, magicalMitigation) = damageType match {
       case DamageType.Cold => (coldResistance, attacker.coldMitigation)
       case DamageType.Fire => (fireResistance, attacker.fireMitigation)
@@ -71,7 +71,7 @@ case class Opponent(
     else (damage - damage * resist).round.toInt
   }
 
-  private def getEffectChangeByType(targetT: EffectTargetType) =
+  private def getEffectChangeByType(targetT: EffectTargetType.Type) =
     activeEffects.filter(_.target == targetT).map(_.change).sum
 
   private def statsConvert(inputInt: Int): Double = inputInt.toDouble * 0.0001

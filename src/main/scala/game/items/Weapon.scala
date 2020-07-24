@@ -1,7 +1,4 @@
-package game
-
-import game.DamageType.DamageType
-import game.WeaponType.WeaponType
+package game.items
 
 import scala.util.Random
 
@@ -14,10 +11,10 @@ object Weapon {
 }
 
 trait Weapon extends Item {
-  def weaponType: WeaponType.WeaponType
+  def weaponType: WeaponType.Type
   def baseDamage: Int
   def twoHanded: Boolean
-  def damageType: DamageType.DamageType
+  def damageType: DamageType.Type
 
   override def _type: String = "weapon"
 
@@ -35,12 +32,12 @@ trait Weapon extends Item {
 }
 
 object WeaponType extends Enumeration {
-  type WeaponType = Value
+  type Type = Value
   val Scepter, Mace, Axe, Sword, Bow, Dagger, Staff, Wand, Polearm = Value
 }
 
 object DamageType extends Enumeration {
-  type DamageType = Value
+  type Type = Value
   val Physical, Fire, Cold, Lightning = Value
 }
 
@@ -49,22 +46,22 @@ case class Sword(
   cd: Int,
   baseDamage: Int,
   twoHanded: Boolean,
-  damageType: DamageType = DamageType.Physical,
+  damageType: DamageType.Type = DamageType.Physical,
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Weapon {
-  override def weaponType: WeaponType = WeaponType.Sword
+  override def weaponType: WeaponType.Type = WeaponType.Sword
 }
 
 case class Dagger(
   name: String,
   cd: Int,
   baseDamage: Int,
-  damageType: DamageType = DamageType.Physical,
+  damageType: DamageType.Type = DamageType.Physical,
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Weapon {
-  override def weaponType: WeaponType = WeaponType.Dagger
+  override def weaponType: WeaponType.Type = WeaponType.Dagger
   override def twoHanded: Boolean = false
 }
 
@@ -73,9 +70,9 @@ case class Polearm(
   cd: Int,
   baseDamage: Int,
   twoHanded: Boolean,
-  damageType: DamageType = DamageType.Physical,
+  damageType: DamageType.Type = DamageType.Physical,
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Weapon {
-  override def weaponType: WeaponType = WeaponType.Polearm
+  override def weaponType: WeaponType.Type = WeaponType.Polearm
 }

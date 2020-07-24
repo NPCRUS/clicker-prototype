@@ -1,5 +1,7 @@
 package game
 
+import game.items.{Item, LastingActiveEffect, OneTimeActiveEffect, PeriodicActiveEffect, Weapon}
+
 import scala.annotation.tailrec
 
 object Battle {
@@ -25,16 +27,12 @@ class Battle(pawn1: Pawn, pawn2: Pawn) {
         val newOpponents = applicableResult.opponents
 
         val preparedApplicable = ordered.tail.map(t => t.withNewCd(t.cd - currentApplicable.cd))
-        val applicableApplied = currentApplicable match {
-          case i: ItemApplicable => preparedApplicable :+ i.withNewCd(i.item.cd)
-          case _ => preparedApplicable
-        }
 
         println()
         _calculate(
           newOpponents,
           actions ++ applicableResult.actions,
-          applicableApplied ++ applicableResult.subApplicable,
+          preparedApplicable ++ applicableResult.subApplicable,
           timestamp + currentApplicable.cd
         )
       }
@@ -78,7 +76,7 @@ class Battle(pawn1: Pawn, pawn2: Pawn) {
     ApplicableResult(
       actions,
       actualOp,
-      newApplicable
+      newApplicable :+ a.withNewCd(a.item.cd)
     )
   }
 

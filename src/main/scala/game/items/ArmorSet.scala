@@ -1,4 +1,4 @@
-package game
+package game.items
 
 object ArmorSet {
   def empty: ArmorSet = new ArmorSet(None, None, None, None, None, None, None, None)

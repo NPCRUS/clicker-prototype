@@ -1,4 +1,4 @@
-package game
+package game.items
 
 import scala.util.Random
 
@@ -11,23 +11,23 @@ trait Item {
 }
 
 object EffectTargetType extends Enumeration {
-  type EffectTargetType = Value
+  type Type = Value
   val Hp, Armor, Parry, Evasion, Block, ColdRes, FireRes, LightningRes, ColdMit, FireMit, LightningMit, ArmorMit, Accuracy = Value
 }
 
 case class PassiveEffect(
-  target: EffectTargetType.EffectTargetType ,
+  target: EffectTargetType.Type ,
   change: Int
 )
 
 object ActiveEffectType extends Enumeration {
-  type ActiveEffectType = Value
+  type Type = Value
   val OneTime, Periodic, Lasting = Value
 }
 
 trait ActiveEffect {
-  def _type: ActiveEffectType.ActiveEffectType
-  def target: EffectTargetType.EffectTargetType
+  def _type: ActiveEffectType.Type
+  def target: EffectTargetType.Type
   def chance: Double
   def change: Int
   def self: Boolean
@@ -36,16 +36,16 @@ trait ActiveEffect {
 }
 
 case class OneTimeActiveEffect(
-  _type: ActiveEffectType.ActiveEffectType,
-  target: EffectTargetType.EffectTargetType,
+  _type: ActiveEffectType.Type,
+  target: EffectTargetType.Type,
   chance: Double,
   change: Int,
   self: Boolean
 ) extends ActiveEffect
 
 case class PeriodicActiveEffect(
-  _type: ActiveEffectType.ActiveEffectType,
-  target: EffectTargetType.EffectTargetType,
+  _type: ActiveEffectType.Type,
+  target: EffectTargetType.Type,
   chance: Double,
   change: Int,
   self: Boolean,
@@ -54,8 +54,8 @@ case class PeriodicActiveEffect(
 ) extends ActiveEffect
 
 case class LastingActiveEffect(
-  _type: ActiveEffectType.ActiveEffectType,
-  target: EffectTargetType.EffectTargetType,
+  _type: ActiveEffectType.Type,
+  target: EffectTargetType.Type,
   chance: Double,
   change: Int,
   self: Boolean,

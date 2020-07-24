@@ -1,6 +1,6 @@
 package game
 
-import game.WeaponType.WeaponType
+import game.items.{ArmorSet, Dagger, OneHandedHandle, Polearm, TwoHandedHandle, Weapon}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 

@@ -1,76 +1,80 @@
 package game
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import game.ActiveEffectType.ActiveEffectType
-import game.ArmorType.ArmorType
-import game.AvoidanceType.AvoidanceType
-import game.DamageType.DamageType
-import game.HandleType.HandleType
-import game.EffectTargetType.EffectTargetType
-import game.WeaponType.WeaponType
+import game.ActionType.Type
+import game.items._
 import spray.json._
 
 object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
 
-  implicit object ArmorTypeFormat extends RootJsonFormat[ArmorType.ArmorType] {
-    override def write(obj: ArmorType): JsValue = JsString(obj.toString)
+  implicit object ArmorTypeFormat extends RootJsonFormat[ArmorType.Type] {
+    override def write(obj: ArmorType.Type): JsValue = JsString(obj.toString)
 
-    override def read(json: JsValue): ArmorType = json match {
+    override def read(json: JsValue): ArmorType.Type = json match {
       case JsString(str) => ArmorType.withName(str)
       case unknown => deserializationError(s"json deserialize error: $unknown")
     }
   }
 
-  implicit object WeaponTypeFormat extends RootJsonFormat[WeaponType.WeaponType] {
-    override def write(obj: WeaponType): JsValue = JsString(obj.toString)
+  implicit object WeaponTypeFormat extends RootJsonFormat[WeaponType.Type] {
+    override def write(obj: WeaponType.Type): JsValue = JsString(obj.toString)
 
-    override def read(json: JsValue): WeaponType = json match {
+    override def read(json: JsValue): WeaponType.Type = json match {
       case JsString(str) => WeaponType.withName(str)
       case unknown => deserializationError(s"json deserialize error: $unknown")
     }
   }
 
-  implicit object HandleTypeFormat extends RootJsonFormat[HandleType.HandleType] {
-    override def write(obj: HandleType): JsValue = JsString(obj.toString)
+  implicit object HandleTypeFormat extends RootJsonFormat[HandleType.Type] {
+    override def write(obj: HandleType.Type): JsValue = JsString(obj.toString)
 
-    override def read(json: JsValue): HandleType = json match {
+    override def read(json: JsValue): HandleType.Type = json match {
       case JsString(str) => HandleType.withName(str)
       case unknown => deserializationError(s"json deserialize error: $unknown")
     }
   }
 
-  implicit object PassiveEffectTypeFormat extends RootJsonFormat[EffectTargetType] {
-    override def write(obj: EffectTargetType): JsValue = JsString(obj.toString)
+  implicit object PassiveEffectTypeFormat extends RootJsonFormat[EffectTargetType.Type] {
+    override def write(obj: EffectTargetType.Type): JsValue = JsString(obj.toString)
 
-    override def read(json: JsValue): EffectTargetType = json match {
+    override def read(json: JsValue): EffectTargetType.Type = json match {
       case JsString(str) => EffectTargetType.withName(str)
       case unknown => deserializationError(s"json deserialize error: $unknown")
     }
   }
 
-  implicit object AvoidanceTypeFormat extends RootJsonFormat[AvoidanceType] {
-    override def write(obj: AvoidanceType): JsValue = JsString(obj.toString)
+  implicit object AvoidanceTypeFormat extends RootJsonFormat[AvoidanceType.Type] {
+    override def write(obj: AvoidanceType.Type): JsValue = JsString(obj.toString)
 
-    override def read(json: JsValue): AvoidanceType = json match {
+    override def read(json: JsValue): AvoidanceType.Type = json match {
       case JsString(str) => AvoidanceType.withName(str)
       case unknown => deserializationError(s"json deserialize error: $unknown")
     }
   }
 
-  implicit object DamageTypeFormat extends RootJsonFormat[DamageType] {
-    override def write(obj: DamageType): JsValue = JsString(obj.toString)
+  implicit object DamageTypeFormat extends RootJsonFormat[DamageType.Type] {
+    override def write(obj: DamageType.Type): JsValue = JsString(obj.toString)
 
-    override def read(json: JsValue): DamageType = json match {
+    override def read(json: JsValue): DamageType.Type = json match {
       case JsString(str) => DamageType.withName(str)
       case unknown => deserializationError(s"json deserialize error: $unknown")
     }
   }
 
-  implicit object ActiveEffectTypeFormat extends RootJsonFormat[ActiveEffectType] {
-    override def write(obj: ActiveEffectType): JsValue = JsString(obj.toString)
+  implicit object ActiveEffectTypeFormat extends RootJsonFormat[ActiveEffectType.Type] {
+    override def write(obj: ActiveEffectType.Type): JsValue = JsString(obj.toString)
 
-    override def read(json: JsValue): ActiveEffectType = json match {
+    override def read(json: JsValue): ActiveEffectType.Type = json match {
       case JsString(str) => ActiveEffectType.withName(str)
+      case unknown => deserializationError(s"json deserialize error: $unknown")
+    }
+  }
+
+  implicit object ActionTypeFormat extends RootJsonFormat[ActionType.Type] {
+    override def write(obj: Type): JsValue = JsString(obj.toString)
+
+    override def read(json: JsValue): Type = json match {
+      case JsString(str) => ActionType.withName(str)
       case unknown => deserializationError(s"json deserialize error: $unknown")
     }
   }
@@ -173,7 +177,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
 
   // WEAPON
   class WeaponTypedProtocol[T <: Weapon](
-    factory: (String, Int, Int, Boolean, DamageType.DamageType, List[PassiveEffect], List[ActiveEffect]) => T
+    factory: (String, Int, Int, Boolean, DamageType.Type, List[PassiveEffect], List[ActiveEffect]) => T
   ) extends RootJsonFormat[T] {
     override def write(obj: T): JsValue = {
       JsObject(
@@ -196,7 +200,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
         fields("cd").convertTo[Int],
         fields("baseDamage").convertTo[Int],
         fields("twoHanded").convertTo[Boolean],
-        fields("damageType").convertTo[DamageType],
+        fields("damageType").convertTo[DamageType.Type],
         fields("passiveEffects").convertTo[List[PassiveEffect]],
         fields("activeEffects").convertTo[List[ActiveEffect]]
       )
@@ -205,7 +209,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val swordProtocol: RootJsonFormat[Sword] = new WeaponTypedProtocol[Sword](Sword.apply)
   implicit val spearProtocol: RootJsonFormat[Polearm] = new WeaponTypedProtocol[Polearm](Polearm.apply)
   implicit object daggerProtocol extends WeaponTypedProtocol[Dagger](
-    (str, int1, int2, bool, damageType,  pe, ae) => Dagger(str, int1, int2, damageType, pe, ae)
+    (str, int1, int2, bool, damageType,  pe, ae) => items.Dagger(str, int1, int2, damageType, pe, ae)
   ) {
     override def read(json: JsValue): Dagger = {
       val fields = json.asJsObject.fields
@@ -213,7 +217,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
         fields("name").convertTo[String],
         fields("cd").convertTo[Int],
         fields("baseDamage").convertTo[Int],
-        fields("damageType").convertTo[DamageType],
+        fields("damageType").convertTo[DamageType.Type],
         fields("passiveEffects").convertTo[List[PassiveEffect]]
       )
     }
@@ -377,10 +381,101 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   }
 
   // ACTIONS
-  implicit val damageDealProtocol: RootJsonFormat[DamageDeal] = jsonFormat6(DamageDeal.apply)
-  implicit val avoidanceProtocol: RootJsonFormat[Avoidance] = jsonFormat6(Avoidance.apply)
-  implicit val effectApplicationProtocol: RootJsonFormat[EffectApplication] = jsonFormat6(EffectApplication.apply)
-  implicit val effectEndProtocol: RootJsonFormat[EffectEnd] = jsonFormat6(EffectEnd)
+  implicit object DamageDealFormat extends RootJsonFormat[DamageDeal] {
+    override def write(obj: DamageDeal): JsValue = {
+      JsObject(
+        "init" -> obj.init.toJson,
+        "target" -> obj.target.toJson,
+        "item" -> obj.item.toJson,
+        "timestamp" -> obj.timestamp.toJson,
+        "_type" -> obj._type.toJson,
+        "damage" -> obj.damage.toJson
+      )
+    }
+
+    override def read(json: JsValue): DamageDeal = {
+      val fields = json.asJsObject.fields
+      DamageDeal(
+        fields("init").convertTo[Opponent],
+        fields("target").convertTo[Opponent],
+        fields("item").convertTo[Item],
+        fields("timestamp").convertTo[Int],
+        fields("damage").convertTo[Int]
+      )
+    }
+  }
+
+  implicit object AvoidanceFormat extends RootJsonFormat[Avoidance] {
+    override def write(obj: Avoidance): JsValue = {
+      JsObject(
+        "init" -> obj.init.toJson,
+        "target" -> obj.target.toJson,
+        "item" -> obj.item.toJson,
+        "timestamp" -> obj.timestamp.toJson,
+        "_type" -> obj._type.toJson,
+        "avoidanceType" -> obj.avoidanceType.toJson
+      )
+    }
+
+    override def read(json: JsValue): Avoidance = {
+      val fields = json.asJsObject.fields
+      Avoidance(
+        fields("init").convertTo[Opponent],
+        fields("target").convertTo[Opponent],
+        fields("item").convertTo[Item],
+        fields("timestamp").convertTo[Int],
+        fields("avoidanceType").convertTo[AvoidanceType.Type]
+      )
+    }
+  }
+
+  implicit object EffectApplicationFormat extends RootJsonFormat[EffectApplication] {
+    override def write(obj: EffectApplication): JsValue = {
+      JsObject(
+        "init" -> obj.init.toJson,
+        "target" -> obj.target.toJson,
+        "item" -> obj.item.toJson,
+        "timestamp" -> obj.timestamp.toJson,
+        "_type" -> obj._type.toJson,
+        "effect" -> obj.effect.toJson
+      )
+    }
+
+    override def read(json: JsValue): EffectApplication = {
+      val fields = json.asJsObject.fields
+      EffectApplication(
+        fields("init").convertTo[Opponent],
+        fields("target").convertTo[Opponent],
+        fields("item").convertTo[Item],
+        fields("timestamp").convertTo[Int],
+        fields("effect").convertTo[ActiveEffect]
+      )
+    }
+  }
+
+  implicit object EffectEndFormat extends RootJsonFormat[EffectEnd] {
+    override def write(obj: EffectEnd): JsValue = {
+      JsObject(
+        "init" -> obj.init.toJson,
+        "target" -> obj.target.toJson,
+        "item" -> obj.item.toJson,
+        "timestamp" -> obj.timestamp.toJson,
+        "_type" -> obj._type.toJson,
+        "effect" -> obj.effect.toJson
+      )
+    }
+
+    override def read(json: JsValue): EffectEnd = {
+      val fields = json.asJsObject.fields
+      EffectEnd(
+        fields("init").convertTo[Opponent],
+        fields("target").convertTo[Opponent],
+        fields("item").convertTo[Item],
+        fields("timestamp").convertTo[Int],
+        fields("effect").convertTo[ActiveEffect]
+      )
+    }
+  }
 
   implicit object ActionFormat extends RootJsonFormat[Action] {
     override def write(obj: Action): JsValue =
@@ -392,12 +487,18 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
         case unknown => deserializationError(s"json deserialize error: $unknown")
       }).asJsObject.fields)
 
-    override def read(json: JsValue): Action =
-      json.asJsObject.getFields("_type") match {
-        case Seq(JsString("damage")) => json.convertTo[DamageDeal]
-        case Seq(JsString("avoidance")) => json.convertTo[Avoidance]
-        case Seq(JsString("effect_application")) => json.convertTo[EffectApplication]
-        case Seq(JsString("effect_end")) => json.convertTo[EffectEnd]
+    override def read(json: JsValue): Action = {
+      val fields = json.asJsObject.fields
+      val actionType = fields.get("_type") match {
+        case Some(JsString(s)) => ActionType.withName(s)
+        case unknown => deserializationError(s"json deserialize error: $unknown")
       }
+      actionType match {
+        case ActionType.DamageDeal => json.convertTo[DamageDeal]
+        case ActionType.Avoidance => json.convertTo[Avoidance]
+        case ActionType.EffectApplication => json.convertTo[EffectApplication]
+        case ActionType.EffectEnd => json.convertTo[EffectEnd]
+      }
+    }
   }
 }

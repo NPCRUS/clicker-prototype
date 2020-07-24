@@ -1,16 +1,14 @@
-package game
-
-import game.ArmorType.ArmorType
+package game.items
 
 trait Armor extends Item {
-  def armorType: ArmorType.ArmorType
+  def armorType: ArmorType.Type
   def armor: Int
 
   override def _type: String = "armor"
 }
 
 object ArmorType extends Enumeration {
-  type ArmorType = Value
+  type Type = Value
   val Helmet, Body, Gloves, Boots, Belt, Amulet, Ring, Shield = Value
 }
 
@@ -21,7 +19,7 @@ case class Helmet(
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Armor {
-  override def armorType: ArmorType = ArmorType.Helmet
+  override def armorType: ArmorType.Type = ArmorType.Helmet
 }
 
 case class Body(
@@ -31,7 +29,7 @@ case class Body(
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Armor {
-  override def armorType: ArmorType = ArmorType.Body
+  override def armorType: ArmorType.Type = ArmorType.Body
 }
 
 case class Gloves(
@@ -41,7 +39,7 @@ case class Gloves(
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Armor {
-  override def armorType: ArmorType = ArmorType.Gloves
+  override def armorType: ArmorType.Type = ArmorType.Gloves
 }
 
 case class Boots(
@@ -51,7 +49,7 @@ case class Boots(
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Armor {
-  override def armorType: ArmorType = ArmorType.Boots
+  override def armorType: ArmorType.Type = ArmorType.Boots
 }
 
 case class Belt(
@@ -61,7 +59,7 @@ case class Belt(
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Armor {
-  override def armorType: ArmorType = ArmorType.Belt
+  override def armorType: ArmorType.Type = ArmorType.Belt
 }
 
 case class Amulet(
@@ -71,7 +69,7 @@ case class Amulet(
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Armor {
-  override def armorType: ArmorType = ArmorType.Amulet
+  override def armorType: ArmorType.Type = ArmorType.Amulet
 }
 
 case class Ring(
@@ -81,7 +79,7 @@ case class Ring(
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Armor {
-  override def armorType: ArmorType = ArmorType.Ring
+  override def armorType: ArmorType.Type = ArmorType.Ring
 }
 
 case class Shield(
@@ -91,5 +89,5 @@ case class Shield(
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Armor {
-  override def armorType: ArmorType = ArmorType.Ring
+  override def armorType: ArmorType.Type = ArmorType.Ring
 }

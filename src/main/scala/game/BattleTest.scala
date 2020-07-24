@@ -1,5 +1,7 @@
 package game
 
+import game.items.{ActiveEffectType, ArmorSet, Body, Dagger, DamageType, EffectTargetType, OneHandedHandle, PassiveEffect, PeriodicActiveEffect, Polearm, TwoHandedHandle}
+
 object BattleTest extends App {
   val knife = Dagger(
     "knife",
@@ -7,7 +9,7 @@ object BattleTest extends App {
     20,
     DamageType.Physical,
     List(PassiveEffect(EffectTargetType.ColdRes, 1000)),
-    List(PeriodicActiveEffect(ActiveEffectType.Periodic, EffectTargetType.Armor, chance = 1.0, change = 50, self = true, 4, 2000)))
+    List(PeriodicActiveEffect(ActiveEffectType.Periodic, EffectTargetType.Hp, chance = 1.0, change = 10, self = true, 4, 2000)))
   val handle1 = OneHandedHandle(knife, None)
   val pawn1 = Pawn("Mate", handle1, ArmorSet.empty, InitialProperties())
 
