@@ -1,5 +1,7 @@
 package game.items
 
+import game.items.ItemType.Type
+
 import scala.util.Random
 
 object Weapon {
@@ -16,7 +18,7 @@ trait Weapon extends Item {
   def twoHanded: Boolean
   def damageType: DamageType.Type
 
-  override def _type: String = "weapon"
+  override def _type: Type = ItemType.Weapon
 
   def getDamage: Int = {
     val damageMultiplier: Double = Random.between(85, 115).toDouble / 100

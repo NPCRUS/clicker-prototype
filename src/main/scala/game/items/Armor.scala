@@ -1,10 +1,11 @@
 package game.items
+import game.items.ItemType.Type
 
 trait Armor extends Item {
   def armorType: ArmorType.Type
   def armor: Int
 
-  override def _type: String = "armor"
+  override def _type: Type = ItemType.Armor
 }
 
 object ArmorType extends Enumeration {

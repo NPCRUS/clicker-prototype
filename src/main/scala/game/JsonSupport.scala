@@ -7,6 +7,15 @@ import spray.json._
 
 object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
 
+  implicit object ItemTypeFormat extends RootJsonFormat[ItemType.Type] {
+    override def write(obj: ItemType.Type): JsValue = JsString(obj.toString)
+
+    override def read(json: JsValue): ItemType.Type = json match {
+      case JsString(str) => ItemType.withName(str)
+      case unknown => deserializationError(s"json deserialize error: $unknown")
+    }
+  }
+
   implicit object ArmorTypeFormat extends RootJsonFormat[ArmorType.Type] {
     override def write(obj: ArmorType.Type): JsValue = JsString(obj.toString)
 
@@ -116,7 +125,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
         "cd" -> JsNumber(obj.cd),
         "armor" -> JsNumber(obj.armor),
         "armorType" -> obj.armorType.toJson,
-        "_type" -> JsString(obj._type),
+        "_type" -> obj._type.toJson,
         "passiveEffects" -> JsArray(obj.passiveEffects.toJson),
         "activeEffects" -> JsArray(obj.activeEffects.toJson)
       )
@@ -187,7 +196,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
         "twoHanded" -> JsBoolean(obj.twoHanded),
         "damageType" -> obj.damageType.toJson,
         "weaponType" -> obj.weaponType.toJson,
-        "_type" -> JsString(obj._type),
+        "_type" -> obj._type.toJson,
         "passiveEffects" -> JsArray(obj.passiveEffects.toJson),
         "activeEffects" -> JsArray(obj.activeEffects.toJson)
       )

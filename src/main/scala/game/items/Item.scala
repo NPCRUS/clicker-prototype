@@ -5,9 +5,14 @@ import scala.util.Random
 trait Item {
   def name: String
   def cd: Int
-  def _type: String
+  def _type: ItemType.Type
   def passiveEffects: List[PassiveEffect]
   def activeEffects: List[ActiveEffect]
+}
+
+object ItemType extends Enumeration {
+  type Type = Value
+  val Weapon, Armor = Value
 }
 
 object EffectTargetType extends Enumeration {
