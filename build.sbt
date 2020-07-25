@@ -4,6 +4,9 @@ version := "0.1"
 
 scalaVersion := "2.13.3"
 
+assemblyJarName in assembly := "clicker-prototype.jar"
+mainClass in assembly := Some("WebServer")
+
 libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.4.0",
   "com.pauldijou" %% "jwt-spray-json" % "4.2.0",
