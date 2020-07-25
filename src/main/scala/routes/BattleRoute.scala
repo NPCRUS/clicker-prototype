@@ -2,40 +2,59 @@ package routes
 
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import game.JsonSupport._
+import config.AppConfig
 import game._
 import game.items._
+import models._
+import models.JsonSupport._
+import util.AppExceptions
+import util.AppExceptions._
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.util.{Failure, Success}
 
 class BattleRoute {
+  import game.JsonSupport._
+
   def getRoutes: Route = path("battle") {
     post {
-      Authenticate.customAuthorization{ token =>
-        val knife = Dagger(
-          "knife",
-          cd = 10000,
-          20,
-          DamageType.Physical,
-          List(PassiveEffect(EffectTargetType.ColdRes, 1000)),
-          List(PeriodicActiveEffect(ActiveEffectType.Periodic, EffectTargetType.Hp, chance = 1.0, change = 10, self = true, 4, 2000)))
-        val handle1 = OneHandedHandle(knife, None)
-        val pawn1 = Pawn("Mate", handle1, ArmorSet.empty, InitialProperties())
-
-        val pitchfork = Polearm(
-          "pitchfork",
-          cd = 7000,
-          15,
-          twoHanded = true,
-          DamageType.Physical, List(PassiveEffect(EffectTargetType.ColdMit, 1000))
+      Authenticate.customAuthorization { token =>
+        entity(as[BattlePost])(battlePost =>
+          onComplete(battle(token, battlePost)) {
+            case Success(result) => complete(result)
+            case Failure(exception) =>
+              complete(AppExceptions.convertToHttpResponse(exception))
+          }
         )
-        val handle2 = TwoHandedHandle(pitchfork)
-        val body = Body("best", 10000, 100, List.empty)
-        val armorSet = ArmorSet(None, Some(body), None, None, None, None, None, None)
-        val pawn2 = Pawn("John", handle2, armorSet, InitialProperties(100))
-
-        val battle = new Battle(pawn1, pawn2)
-        val actions = battle.calculate()
-        complete(actions)
       }
+    }
+  }
+
+  private def battle(token: Token, battlePost: BattlePost): Future[List[Action]] = {
+    AppConfig.db.run(Schemas.getUserByUserId(token.user_id.toInt)).map {
+      case Some(u) =>
+        if(u.maxMapLevel <= battlePost.mapLevel) u
+        else throw new MapLevelExcessException
+      case None => throw new UserNotFound
+    }.map { user =>
+       //instead of this we should retrieve character and his inventory and convert it to a pawn
+      val knife = Dagger(
+        "knife",
+        cd = 10000,
+        20,
+        DamageType.Physical,
+        List(PassiveEffect(EffectTargetType.ColdRes, 1000)),
+        List(PeriodicActiveEffect(ActiveEffectType.Periodic, EffectTargetType.Hp, chance = 1.0, change = 10, self = true, 4, 2000))
+      )
+      val handle1 = OneHandedHandle(knife, None)
+      val character = Pawn("Mate", handle1, ArmorSet.empty, InitialProperties())
+
+      val enemyBot = Generator.generateBotEnemy(character, battlePost.mapLevel)
+
+      val battle = new Battle(character, enemyBot)
+      val actions = battle.calculate()
+      actions
     }
   }
 }
