@@ -1,7 +1,4 @@
-
-case class RawToken(
-  token: String
-)
+package models
 
 case class Token(
   exp: Long,

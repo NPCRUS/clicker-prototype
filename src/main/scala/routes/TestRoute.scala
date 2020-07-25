@@ -1,4 +1,5 @@
-import akka.http.scaladsl.model.StatusCodes
+package routes
+
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 

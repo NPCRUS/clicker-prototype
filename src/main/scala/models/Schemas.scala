@@ -1,18 +1,22 @@
+package models
+
+import config.AppConfig
 import slick.jdbc.H2Profile.api._
 
 import scala.concurrent.Future
 
 object Schemas {
-  class Users(tag: Tag) extends
-    Table[User](tag, "users") {
+  class Users(tag: Tag) extends Table[User](tag, "users") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def opaqueUserId = column[String]("opaque_user_id")
     def channelId = column[String]("channel_id")
     def role = column[String]("role")
     def isUnlinked = column[Boolean]("is_unlinked")
     def userId = column[Int]("user_id")
+    def maxMapLevel = column[Int]("max_map_level", O.Default(1))
 
-    def * = (id.?, opaqueUserId, channelId, role, isUnlinked, userId) <> (User.tupled, User.unapply)
+    def * =
+      (id.?, opaqueUserId, channelId, role, isUnlinked, userId, maxMapLevel).mapTo[User]
   }
 
   val users = TableQuery[Users]
@@ -36,6 +40,7 @@ case class User(
   chanelId: String,
   role: String,
   isUnlinked: Boolean,
-  userId: Int
+  userId: Int,
+  maxMapLevel: Int = 1
 )
 

@@ -1,8 +1,11 @@
-import JsonSupport._
+package routes
+
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
+import config.AppConfig
+import models.{Schemas, User}
+import models.JsonSupport._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

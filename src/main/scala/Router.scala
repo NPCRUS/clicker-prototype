@@ -1,6 +1,7 @@
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
+import routes.{BattleRoute, MeRoute, TestRoute}
 
 object Router {
 

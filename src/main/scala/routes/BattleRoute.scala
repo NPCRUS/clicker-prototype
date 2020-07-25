@@ -1,8 +1,10 @@
+package routes
+
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import game._
 import game.JsonSupport._
-import game.items.{ActiveEffectType, ArmorSet, Body, Dagger, DamageType, EffectTargetType, OneHandedHandle, PassiveEffect, PeriodicActiveEffect, Polearm, TwoHandedHandle}
+import game._
+import game.items._
 
 class BattleRoute {
   def getRoutes: Route = path("battle") {

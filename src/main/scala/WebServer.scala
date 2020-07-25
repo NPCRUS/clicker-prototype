@@ -1,5 +1,6 @@
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
+import config.AppConfig
 
 import scala.concurrent.ExecutionContext
 
