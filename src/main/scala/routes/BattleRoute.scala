@@ -18,15 +18,17 @@ class BattleRoute {
   import game.JsonSupport._
 
   def getRoutes: Route = path("battle") {
-    post {
-      Authenticate.customAuthorization { token =>
-        entity(as[BattlePost])(battlePost =>
-          onComplete(battle(token, battlePost)) {
-            case Success(result) => complete(result)
-            case Failure(exception) =>
-              complete(AppExceptions.convertToHttpResponse(exception))
-          }
-        )
+    Authenticate.customAuthorization { token =>
+      concat {
+        post {
+          entity(as[BattlePost])(battlePost =>
+            onComplete(battle(token, battlePost)) {
+              case Success(result) => complete(result)
+              case Failure(exception) =>
+                complete(AppExceptions.convertToHttpResponse(exception))
+            }
+          )
+        }
       }
     }
   }
