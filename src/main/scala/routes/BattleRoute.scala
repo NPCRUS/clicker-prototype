@@ -19,15 +19,13 @@ class BattleRoute {
 
   def getRoutes: Route = path("battle") {
     Authenticate.customAuthorization { token =>
-      concat {
-        post {
-          entity(as[BattlePost])(battlePost =>
-            onComplete(battle(token, battlePost)) {
-              case Success(result) => complete(result)
-              case Failure(exception) => throw exception
-            }
-          )
-        }
+      post {
+        entity(as[BattlePost])(battlePost =>
+          onComplete(battle(token, battlePost)) {
+            case Success(result) => complete(result)
+            case Failure(exception) => throw exception
+          }
+        )
       }
     }
   }

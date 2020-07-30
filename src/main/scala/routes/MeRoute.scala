@@ -15,20 +15,18 @@ import scala.util.{Failure, Success}
 class MeRoute {
   def getRoutes: Route = path("me") {
     Authenticate.customAuthorization{ token =>
-      concat {
-        get {
-          onComplete(
-            AppConfig.db.run(Schemas.getUserByUserId(token.user_id.toInt)).flatMap {
-              case Some(u) => Future(u)
-              case None => Schemas.createFromToken(token)
-            }.map { u =>
-              User(u.id, u.opaqueUserId, u.chanelId, u.role, u.isUnlinked, u.userId)
-            }
-          ) {
-            case Success(result) =>
-              complete(result)
-            case Failure(exception) => throw exception
+      get {
+        onComplete(
+          AppConfig.db.run(Schemas.getUserByUserId(token.user_id.toInt)).flatMap {
+            case Some(u) => Future(u)
+            case None => Schemas.createFromToken(token)
+          }.map { u =>
+            User(u.id, u.opaqueUserId, u.chanelId, u.role, u.isUnlinked, u.userId)
           }
+        ) {
+          case Success(result) =>
+            complete(result)
+          case Failure(exception) => throw exception
         }
       }
     }

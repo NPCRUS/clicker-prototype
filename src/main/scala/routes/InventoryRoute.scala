@@ -14,13 +14,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class InventoryRoute {
   def getRoutes: Route = path("inventory") {
     Authenticate.customAuthorization { token =>
-      concat {
-        get {
-          onComplete(inventory(token)) {
-            case Success(result) =>
-              complete(result)
-            case Failure(exception) => throw exception
-          }
+      get {
+        onComplete(inventory(token)) {
+          case Success(result) =>
+            complete(result)
+          case Failure(exception) => throw exception
         }
       }
     }
