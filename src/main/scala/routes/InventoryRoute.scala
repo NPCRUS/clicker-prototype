@@ -19,8 +19,7 @@ class InventoryRoute {
           onComplete(inventory(token)) {
             case Success(result) =>
               complete(result)
-            case Failure(exception) =>
-              complete(AppExceptions.convertToHttpResponse(exception))
+            case Failure(exception) => AppExceptions.convertToHttpResponse(exception)
           }
         }
       }

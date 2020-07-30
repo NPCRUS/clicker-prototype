@@ -1,14 +1,15 @@
 package util
 
 import akka.http.scaladsl.model.{HttpResponse, StatusCode, StatusCodes}
+import akka.http.scaladsl.server.Directives._
 
 import scala.util.Failure
 
 
 object AppExceptions {
-  def convertToHttpResponse(f: Throwable): HttpResponse = f match {
-    case e: MapLevelExcessException => HttpResponse(e.statusCode, entity = e.toString)
-    case e: Throwable => HttpResponse(StatusCodes.InternalServerError, entity = e.toString)
+  def convertToHttpResponse(f: Throwable) = f match {
+    case e: MapLevelExcessException => complete(e.statusCode, e.toString)
+    case e: Throwable => complete(StatusCodes.InternalServerError, e.toString)
   }
 
   trait AppDefinedException extends Throwable {

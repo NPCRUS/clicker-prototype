@@ -24,8 +24,7 @@ class BattleRoute {
           entity(as[BattlePost])(battlePost =>
             onComplete(battle(token, battlePost)) {
               case Success(result) => complete(result)
-              case Failure(exception) =>
-                complete(AppExceptions.convertToHttpResponse(exception))
+              case Failure(exception) => AppExceptions.convertToHttpResponse(exception)
             }
           )
         }
