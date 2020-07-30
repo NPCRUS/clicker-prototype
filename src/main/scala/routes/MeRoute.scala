@@ -27,7 +27,7 @@ class MeRoute {
           ) {
             case Success(result) =>
               complete(result)
-            case Failure(exception) => AppExceptions.convertToHttpResponse(exception)
+            case Failure(exception) => throw exception
           }
         }
       }

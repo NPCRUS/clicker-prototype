@@ -24,7 +24,7 @@ class BattleRoute {
           entity(as[BattlePost])(battlePost =>
             onComplete(battle(token, battlePost)) {
               case Success(result) => complete(result)
-              case Failure(exception) => AppExceptions.convertToHttpResponse(exception)
+              case Failure(exception) => throw exception
             }
           )
         }
@@ -35,7 +35,7 @@ class BattleRoute {
   private def battle(token: Token, battlePost: BattlePost): Future[List[Action]] = {
     AppConfig.db.run(Schemas.getUserByUserId(token.user_id.toInt)).map {
       case Some(u) =>
-        if(u.maxMapLevel <= battlePost.mapLevel) u
+        if(battlePost.mapLevel <= u.maxMapLevel) u
         else throw new MapLevelExcessException
       case None => throw new UserNotFound
     }.map { user =>

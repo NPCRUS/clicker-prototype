@@ -7,7 +7,7 @@ import scala.util.Failure
 
 
 object AppExceptions {
-  def convertToHttpResponse(f: Throwable) = f match {
+  def apply(f: Throwable) = f match {
     case e: MapLevelExcessException => complete(e.statusCode, e.toString)
     case e: Throwable => complete(StatusCodes.InternalServerError, e.toString)
   }
