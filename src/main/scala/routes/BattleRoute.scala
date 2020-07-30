@@ -7,7 +7,6 @@ import game._
 import game.items._
 import models._
 import models.JsonSupport._
-import util.AppExceptions
 import util.AppExceptions._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -31,7 +30,7 @@ class BattleRoute {
   }
 
   private def battle(token: Token, battlePost: BattlePost): Future[List[Action]] = {
-    AppConfig.db.run(Schemas.getUserByUserId(token.user_id.toInt)).map {
+    AppConfig.db.run(UserModel.getUserByUserId(token.user_id.toInt)).map {
       case Some(u) =>
         if(battlePost.mapLevel <= u.maxMapLevel) u
         else throw new MapLevelExcessException

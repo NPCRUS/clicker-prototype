@@ -1,12 +1,10 @@
 package routes
 
-import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import config.AppConfig
-import models.{Schemas, User}
 import models.JsonSupport._
-import util.AppExceptions
+import models.{User, UserModel}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -17,9 +15,9 @@ class MeRoute {
     Authenticate.customAuthorization{ token =>
       get {
         onComplete(
-          AppConfig.db.run(Schemas.getUserByUserId(token.user_id.toInt)).flatMap {
+          AppConfig.db.run(UserModel.getUserByUserId(token.user_id.toInt)).flatMap {
             case Some(u) => Future(u)
-            case None => Schemas.createFromToken(token)
+            case None => UserModel.createFromToken(token)
           }.map { u =>
             User(u.id, u.opaqueUserId, u.chanelId, u.role, u.isUnlinked, u.userId)
           }
