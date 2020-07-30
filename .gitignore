@@ -4,3 +4,4 @@ project/target/
 target/
 build/
 src/main/resources/
+.metals
