@@ -5,20 +5,21 @@ import slick.jdbc.H2Profile.api._
 
 import scala.concurrent.Future
 
-object UserModel {
-  val users = TableQuery[Users]
-
-  def getUserByUserId(userId: Int) = users.filter(_.userId === userId)
+object UserModel extends TableQuery(new Users(_)){
+  def getUserByUserId(userId: Int) = this.filter(_.userId === userId)
     .result
     .headOption
 
   def createFromToken(token: Token): Future[User] = {
     AppConfig.db.run(
-      (users returning users.map(_.id)
+      (this returning this.map(_.id)
         into ((user, id) => user.copy(id = Some(id)))
         ) += User(None, token.opaque_user_id, token.channel_id, token.role, token.is_unlinked, token.user_id.toInt)
     )
   }
+
+  def toUser(u: Users#TableElementType): User =
+    User(u.id, u.opaqueUserId, u.chanelId, u.role, u.isUnlinked, u.userId)
 }
 
 class Users(tag: Tag) extends Table[User](tag, "users") {

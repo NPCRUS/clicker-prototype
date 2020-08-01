@@ -20,6 +20,8 @@ libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-nop" % "1.6.4",
   "com.typesafe.slick" %% "slick-hikaricp" % "3.3.2",
   "org.postgresql" % "postgresql" % "42.2.5",
+  "com.github.tminglei" %% "slick-pg" % "0.19.2",
+  "com.github.tminglei" %% "slick-pg_spray-json" % "0.19.2",
 
   "org.scalatest" %% "scalatest" % "3.2.0" % "test"
 )

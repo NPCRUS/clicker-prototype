@@ -19,7 +19,7 @@ class MeRoute {
             case Some(u) => Future(u)
             case None => UserModel.createFromToken(token)
           }.map { u =>
-            User(u.id, u.opaqueUserId, u.chanelId, u.role, u.isUnlinked, u.userId)
+            UserModel.toUser(u)
           }
         ) {
           case Success(result) =>

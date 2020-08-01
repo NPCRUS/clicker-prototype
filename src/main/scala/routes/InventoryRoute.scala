@@ -6,9 +6,7 @@ import config.AppConfig
 import game.items.Item
 import models._
 import models.JsonSupport._
-import spray.json._
 import util.AppExceptions
-
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -37,11 +35,9 @@ class InventoryRoute {
       case Some(u) => u
       case None => throw new AppExceptions.UserNotFound
     }.flatMap { user =>
-      AppConfig.db.run(Inventory.getUserInventory(user))
+      AppConfig.db.run(InventoryModel.getUserInventory(user))
     }.map { items =>
-      items.toList.map { i =>
-        DbItem(i.id, i.name, i.cd, i._type, i.passiveEffects, i.activeEffects, i.user_id, i.armor, i.armorType, i.weaponType, i.baseDamage, i.twoHanded, i.damageType)
-      }
+      items.toList.map(i => InventoryModel.toDbItem(i))
     }
   }
 }
