@@ -6,6 +6,7 @@ import config.AppConfig
 import game._
 import game.items._
 import models._
+import spray.json._
 import models.JsonSupport._
 import util.AppExceptions._
 
@@ -35,18 +36,16 @@ class BattleRoute {
         if(battlePost.mapLevel <= u.maxMapLevel) u
         else throw new MapLevelExcessException
       case None => throw new UserNotFound
-    }.map { user =>
-       //instead of this we should retrieve character and his inventory and convert it to a pawn
-      val knife = Dagger(
-        "knife",
-        cd = 10000,
-        20,
-        DamageType.Physical,
-        List(PassiveEffect(EffectTargetType.ColdRes, 1000)),
-        List(PeriodicActiveEffect(ActiveEffectType.Periodic, EffectTargetType.Hp, chance = 1.0, change = 10, self = true, 4, 2000))
-      )
-      val handle1 = OneHandedHandle(knife, None)
-      val character = Pawn("Mate", handle1, ArmorSet.empty, InitialProperties())
+    }.flatMap { user =>
+      for {
+        items <- AppConfig.db.run(InventoryModel.getEquippedItems(user))
+      } yield (user, items)
+    }.map { res =>
+      val (user, dbItems) = res
+
+      val items = dbItems.toList.map(_.toJson.convertTo[Item])
+      val (handle, armorSet) = prepareWearables(items)
+      val character = Pawn(user.userId.toString, handle, armorSet, InitialProperties())
 
       val enemyBot = Generator.generateBotEnemy(character, battlePost.mapLevel)
 
@@ -54,5 +53,29 @@ class BattleRoute {
       val actions = battle.calculate()
       actions
     }
+  }
+
+  private def prepareWearables(items: List[Item]): (Handle, ArmorSet) = {
+    def wearArmor(items: List[Armor], armorSet: ArmorSet): ArmorSet =
+      if(items.isEmpty) armorSet
+      else wearArmor(items.tail, armorSet.wear(items.head))
+
+
+    val armors = items.collect {
+      case a: Armor => a
+    }
+    val armorSet = wearArmor(armors, ArmorSet.empty)
+
+    val weapon = (items.collectFirst {
+      case a: Weapon => a
+    }).get
+    val shield = armors collectFirst {
+      case s: Shield => s
+    }
+
+    val handle = if(weapon.twoHanded) TwoHandedHandle(weapon)
+    else OneHandedHandle(weapon, shield)
+
+    (handle, armorSet)
   }
 }
