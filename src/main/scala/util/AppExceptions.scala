@@ -9,7 +9,8 @@ import scala.util.Failure
 object AppExceptions {
   def apply(f: Throwable) = f match {
     case e: MapLevelExcessException => complete(e.statusCode, e.toString)
-    case e: Throwable => complete(StatusCodes.InternalServerError, e.toString)
+    case e: Throwable =>
+      complete(StatusCodes.InternalServerError, e.toString)
   }
 
   trait AppDefinedException extends Throwable {
@@ -24,5 +25,14 @@ object AppExceptions {
   class UserNotFound extends AppDefinedException {
     override def toString: String = "user not found"
     override def statusCode: StatusCode = StatusCodes.NotFound
+  }
+
+  class ItemNotFound extends UserNotFound {
+    override def toString: String = "item not found"
+  }
+
+  class ItemIsAlreadyEquipped extends AppDefinedException {
+    override def toString: String = "item is already equipped"
+    override def statusCode: StatusCode = StatusCodes.Conflict
   }
 }

@@ -126,8 +126,8 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
         "armor" -> JsNumber(obj.armor),
         "armorType" -> obj.armorType.toJson,
         "_type" -> obj._type.toJson,
-        "passiveEffects" -> JsArray(obj.passiveEffects.toJson),
-        "activeEffects" -> JsArray(obj.activeEffects.toJson)
+        "passiveEffects" -> obj.passiveEffects.toJson,
+        "activeEffects" -> obj.activeEffects.toJson
       )
     }
 
@@ -197,8 +197,8 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
         "damageType" -> obj.damageType.toJson,
         "weaponType" -> obj.weaponType.toJson,
         "_type" -> obj._type.toJson,
-        "passiveEffects" -> JsArray(obj.passiveEffects.toJson),
-        "activeEffects" -> JsArray(obj.activeEffects.toJson)
+        "passiveEffects" -> obj.passiveEffects.toJson,
+        "activeEffects" -> obj.activeEffects.toJson
       )
     }
 
@@ -227,7 +227,8 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
         fields("cd").convertTo[Int],
         fields("baseDamage").convertTo[Int],
         fields("damageType").convertTo[DamageType.Type],
-        fields("passiveEffects").convertTo[List[PassiveEffect]]
+        fields("passiveEffects").convertTo[List[PassiveEffect]],
+        fields("activeEffects").convertTo[List[ActiveEffect]]
       )
     }
   }
@@ -264,11 +265,18 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
         case unknown => deserializationError(s"json deserialize error: $unknown")
       }).asJsObject.fields)
 
-    override def read(json: JsValue): Item =
-      json.asJsObject.getFields("_type") match {
-        case Seq(JsString("weapon")) => json.convertTo[Weapon]
-        case Seq(JsString("armor")) => json.convertTo[Armor]
+    override def read(json: JsValue): Item = {
+      val fields = json.asJsObject.fields
+      val itemType = fields.get("_type") match {
+        case Some(JsString(s)) => ItemType.withName(s)
+        case unknown => deserializationError(s"json deserialize error: $unknown")
       }
+
+      itemType match {
+        case ItemType.Weapon => json.convertTo[Weapon]
+        case ItemType.Armor => json.convertTo[Armor]
+      }
+    }
   }
 
   // HANDLES
