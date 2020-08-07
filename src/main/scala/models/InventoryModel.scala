@@ -14,16 +14,8 @@ object InventoryModel extends TableQuery(new Inventory(_)) {
   def getItemByIdAndUser(id: Int, user: User) =
     this.filter(i => i.userId === user.id && i.id === id).result.headOption
 
-  def getEquippedItems(user: User) =
-    this.filter(i => i.userId === user.id && i.equipped).result
-
-  def updateEquipped(items: List[DbItem], equip: Boolean) = {
-    val ids = items.map(_.id.get)
-    this
-      .filter(_.id.inSet(ids))
-      .map(_.equipped)
-      .update(equip)
-  }
+  def getItemsByIds(ids: Seq[Int]) =
+    this.filter(_.id.inSet(ids)).result
 
   def insert(item: DbItem): Future[DbItem] = {
     AppConfig.db.run(
@@ -34,7 +26,7 @@ object InventoryModel extends TableQuery(new Inventory(_)) {
   }
 
   def toDbItem(i: Inventory#TableElementType): DbItem =
-    DbItem(i.id, i.name, i.cd, i._type, i.passiveEffects, i.activeEffects, i.user_id, i.armor, i.armorType, i.weaponType, i.baseDamage, i.twoHanded, i.damageType, i.equipped)
+    DbItem(i.id, i.name, i.cd, i._type, i.passiveEffects, i.activeEffects, i.user_id, i.armor, i.armorType, i.weaponType, i.baseDamage, i.twoHanded, i.damageType)
 }
 
 class Inventory(tag: Tag) extends Table[DbItem](tag, "inventory") {
@@ -51,10 +43,9 @@ class Inventory(tag: Tag) extends Table[DbItem](tag, "inventory") {
   def baseDamage = column[Int]("base_damage")
   def twoHanded = column[Boolean]("two_handed")
   def damageType = column[String]("damage_type")
-  def equipped = column[Boolean]("equipped")
 
   def * =
-    (id.?, name, cd, _type, passiveEffects, activeEffects, userId, armor.?, armorType.?, weaponType.?, baseDamage.?, twoHanded.?, damageType.?, equipped)
+    (id.?, name, cd, _type, passiveEffects, activeEffects, userId, armor.?, armorType.?, weaponType.?, baseDamage.?, twoHanded.?, damageType.?)
       .mapTo[DbItem]
 
   def user = foreignKey("inventory_fk", userId, UserModel)(_.id, onUpdate=ForeignKeyAction.Cascade, onDelete=ForeignKeyAction.Cascade)
@@ -73,6 +64,5 @@ case class DbItem(
   weaponType: Option[String],
   baseDamage: Option[Int],
   twoHanded: Option[Boolean],
-  damageType: Option[String],
-  equipped: Boolean = false
+  damageType: Option[String]
 )

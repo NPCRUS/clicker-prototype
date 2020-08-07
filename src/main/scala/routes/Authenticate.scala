@@ -31,7 +31,6 @@ object Authenticate extends Directives with SprayJsonSupport {
           case Failure(claim) =>
             complete(StatusCodes.Unauthorized, "jwt token error")
         }
-
       case _ => complete(StatusCodes.Unauthorized, "authorization header is not readable")
     }
   }

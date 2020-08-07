@@ -3,6 +3,7 @@ package routes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import config.AppConfig
+import config.AppConfig.db
 import game._
 import game.items._
 import models._
@@ -38,8 +39,9 @@ class BattleRoute {
       case None => throw new UserNotFound
     }.flatMap { user =>
       for {
-        items <- AppConfig.db.run(InventoryModel.getEquippedItems(user))
-      } yield (user, items)
+        character <- db.run(CharacterModel.getCharacter(user)).map(CharacterModel.toDbCharacter)
+        equippedItems <- db.run(InventoryModel.getItemsByIds(character.getIds)).map(_.map(InventoryModel.toDbItem))
+      } yield (user, equippedItems)
     }.map { res =>
       val (user, dbItems) = res
 

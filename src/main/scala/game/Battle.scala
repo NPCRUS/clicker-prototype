@@ -28,7 +28,6 @@ class Battle(pawn1: Pawn, pawn2: Pawn) {
 
         val preparedApplicable = ordered.tail.map(t => t.withNewCd(t.cd - currentApplicable.cd))
 
-        println()
         _calculate(
           newOpponents,
           actions ++ applicableResult.actions,

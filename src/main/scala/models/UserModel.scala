@@ -10,12 +10,10 @@ object UserModel extends TableQuery(new Users(_)){
     .result
     .headOption
 
-  def createFromToken(token: Token): Future[User] = {
-    AppConfig.db.run(
+  def createFromToken(token: Token) = {
       (this returning this.map(_.id)
         into ((user, id) => user.copy(id = Some(id)))
-        ) += User(None, token.opaque_user_id, token.channel_id, token.role, token.is_unlinked, token.user_id.toInt)
-    )
+      ) += User(None, token.opaque_user_id, token.channel_id, token.role, token.is_unlinked, token.user_id.toInt)
   }
 
   def toUser(u: Users#TableElementType): User =

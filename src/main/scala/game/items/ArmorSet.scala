@@ -31,6 +31,5 @@ case class ArmorSet(
       case a: Ring => ArmorSet(helmet, body, gloves, boots, belt, amulet, Some(a), ring2)
       case _ => this
     }
-
   }
 }

@@ -8,7 +8,7 @@ import scala.util.Failure
 
 object AppExceptions {
   def apply(f: Throwable) = f match {
-    case e: MapLevelExcessException => complete(e.statusCode, e.toString)
+    case e: AppDefinedException => complete(e.statusCode, e.toString)
     case e: Throwable =>
       complete(StatusCodes.InternalServerError, e.toString)
   }
@@ -34,5 +34,10 @@ object AppExceptions {
   class ItemIsAlreadyEquipped extends AppDefinedException {
     override def toString: String = "item is already equipped"
     override def statusCode: StatusCode = StatusCodes.Conflict
+  }
+
+  class EquipPartAndItemNotCompatible extends AppDefinedException {
+    override def toString: String = "equip part and item are not compatible"
+    override def statusCode: StatusCode = StatusCodes.BadRequest
   }
 }
