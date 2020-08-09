@@ -163,6 +163,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
         case b: Belt => b.toJson
         case a: Amulet => a.toJson
         case r: Ring => r.toJson
+        case s: Shield => s.toJson
         case unknown => deserializationError(s"json deserialize error: $unknown")
       }).asJsObject.fields)
 
@@ -180,6 +181,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
         case ArmorType.Belt => json.convertTo[Belt]
         case ArmorType.Amulet => json.convertTo[Amulet]
         case ArmorType.Ring => json.convertTo[Ring]
+        case ArmorType.Shield => json.convertTo[Shield]
       }
     }
   }

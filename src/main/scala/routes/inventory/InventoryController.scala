@@ -152,7 +152,7 @@ object InventoryController {
       case w: Weapon if w.twoHanded && equipmentPart == MainHand =>
         character.equipOffHand(None)
           .equipMainHand(item.id)
-      case _: Weapon if equipmentPart == MainHand || equipmentPart == OffHand =>
+      case w: Weapon if !w.twoHanded && (equipmentPart == MainHand || equipmentPart == OffHand) =>
         if(equippedItems.exists(el => el.twoHanded.isDefined && el.twoHanded.get))
           character.equipMainHand(None)
             .equipWeapon(item.id, equipmentPart)

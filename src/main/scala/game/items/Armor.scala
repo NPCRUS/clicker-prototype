@@ -90,5 +90,5 @@ case class Shield(
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Armor {
-  override def armorType: ArmorType.Type = ArmorType.Ring
+  override def armorType: ArmorType.Type = ArmorType.Shield
 }
