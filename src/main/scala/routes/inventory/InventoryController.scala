@@ -3,9 +3,8 @@ package routes.inventory
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import config.AppConfig._
-import game.items.{Armor, ArmorType, Item, ItemType, Shield, Weapon}
-import models.{ArmorSetResponse, CharacterModel, CharacterResponse, DbCharacter, DbItem, EquipItemRequest, EquipmentPart, HandleResponse, InventoryModel, Token, User, UserModel}
-import util.MyPostgresProfile.api._
+import game.items.{Armor, ArmorType, Item, Shield, Weapon}
+import models.{CharacterModel, DbCharacter, DbItem, EquipItemRequest, EquipmentPart, InventoryModel, Token, User, UserModel}
 import spray.json._
 import models.JsonSupport._
 import util.AppExceptions
@@ -20,13 +19,6 @@ object InventoryController {
 
   def getInventory(token: Token) = {
     onComplete(_getInventory(token)) {
-      case Success(result) => complete(result)
-      case Failure(exception) => throw exception
-    }
-  }
-
-  def getEquippedItems(token: Token) = {
-    onComplete(_getEquippedItems(token)) {
       case Success(result) => complete(result)
       case Failure(exception) => throw exception
     }
@@ -49,41 +41,6 @@ object InventoryController {
           throw exception
       }
     }
-  }
-
-  private def _getEquippedItems(token: Token): Future[CharacterResponse] = {
-    def getItem(id: Option[Int], items: Seq[DbItem]) = {
-      if(id.isEmpty) None
-      else items.find(_.id == id)
-    }
-
-    db.run(UserModel.getUserByUserId(token.user_id.toInt)).flatMap {
-      case Some(u) => Future(UserModel.toUser(u))
-      case None => throw new AppExceptions.UserNotFound
-    }.flatMap { user =>
-      for {
-        character <- db.run(CharacterModel.getCharacter(user)).map(CharacterModel.toDbCharacter)
-        items <- db.run(InventoryModel.getItemsByIds(character.getIds)).map(_.map(InventoryModel.toDbItem))
-      } yield {
-        CharacterResponse(
-          ArmorSetResponse(
-            helmet = getItem(character.helmet, items),
-            body = getItem(character.body, items),
-            gloves = getItem(character.gloves, items),
-            boots = getItem(character.boots, items),
-            belt = getItem(character.belt, items),
-            amulet = getItem(character.amulet, items),
-            ring1 = getItem(character.ring1, items),
-            ring2 = getItem(character.ring2, items)
-          ),
-          HandleResponse(
-            mainHand = getItem(character.mainHand, items),
-            offHand = getItem(character.offHand, items)
-          )
-        )
-      }
-    }
-
   }
 
   private def _equipItem(token: Token, equipItemRequest: EquipItemRequest): Future[Int] = {

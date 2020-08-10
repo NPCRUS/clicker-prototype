@@ -10,7 +10,6 @@ object InventoryRoutes {
     Authenticate.customAuthorization { token =>
       concat(
         path("inventory")(get(getInventory(token))),
-        path("inventory" / "equipped")(get(getEquippedItems(token))),
         path("inventory")(post(createItem(token))),
         path("inventory" / "equip")(post(equipItem(token)))
       )
