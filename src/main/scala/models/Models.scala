@@ -36,3 +36,7 @@ case class EquipItemRequest(
   equipmentPart: EquipmentPart.Type,
   itemId: Int
 )
+
+case class UnequipItemRequest(
+  equipmentPart: EquipmentPart.Type
+)

@@ -35,7 +35,7 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
       val equipmentPart = EquipmentPart.Helmet
       val newCharacter = getCharacterWithNewItem(dbItem, emptyCharacter, equipmentPart, Seq.empty)
 
-      newCharacter should be (emptyCharacter.equipArmor(dbItem.id.get, equipmentPart))
+      newCharacter should be (emptyCharacter.equipArmor(dbItem.id, equipmentPart))
     }
 
     "equip body into not body slot should throw exception" in {
@@ -50,7 +50,7 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
       val equipmentPart = EquipmentPart.Body
       val newCharacter = getCharacterWithNewItem(dbItem, emptyCharacter, equipmentPart, Seq.empty)
 
-      newCharacter should be (emptyCharacter.equipArmor(dbItem.id.get, equipmentPart))
+      newCharacter should be (emptyCharacter.equipArmor(dbItem.id, equipmentPart))
     }
 
     "equip gloves into not gloves slot should throw exception" in {
@@ -65,7 +65,7 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
       val equipmentPart = EquipmentPart.Gloves
       val newCharacter = getCharacterWithNewItem(dbItem, emptyCharacter, equipmentPart, Seq.empty)
 
-      newCharacter should be (emptyCharacter.equipArmor(dbItem.id.get, equipmentPart))
+      newCharacter should be (emptyCharacter.equipArmor(dbItem.id, equipmentPart))
     }
 
     "equip boots into not boots slot should throw exception" in {
@@ -80,7 +80,7 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
       val equipmentPart = EquipmentPart.Boots
       val newCharacter = getCharacterWithNewItem(dbItem, emptyCharacter, equipmentPart, Seq.empty)
 
-      newCharacter should be (emptyCharacter.equipArmor(dbItem.id.get, equipmentPart))
+      newCharacter should be (emptyCharacter.equipArmor(dbItem.id, equipmentPart))
     }
 
     "equip belt into not belt slot should throw exception" in {
@@ -95,7 +95,7 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
       val equipmentPart = EquipmentPart.Belt
       val newCharacter = getCharacterWithNewItem(dbItem, emptyCharacter, equipmentPart, Seq.empty)
 
-      newCharacter should be (emptyCharacter.equipArmor(dbItem.id.get, equipmentPart))
+      newCharacter should be (emptyCharacter.equipArmor(dbItem.id, equipmentPart))
     }
 
     "equip amulet into not amulet slot should throw exception" in {
@@ -110,7 +110,7 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
       val equipmentPart = EquipmentPart.Amulet
       val newCharacter = getCharacterWithNewItem(dbItem, emptyCharacter, equipmentPart, Seq.empty)
 
-      newCharacter should be (emptyCharacter.equipArmor(dbItem.id.get, equipmentPart))
+      newCharacter should be (emptyCharacter.equipArmor(dbItem.id, equipmentPart))
     }
 
     "equip ring into not ring1 slot should throw exception" in {
@@ -125,7 +125,7 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
       val equipmentPart = EquipmentPart.Ring1
       val newCharacter = getCharacterWithNewItem(dbItem, emptyCharacter, equipmentPart, Seq.empty)
 
-      newCharacter should be (emptyCharacter.equipArmor(dbItem.id.get, equipmentPart))
+      newCharacter should be (emptyCharacter.equipArmor(dbItem.id, equipmentPart))
     }
 
     "equip ring into not ring2 slot should throw exception" in {
@@ -140,7 +140,7 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
       val equipmentPart = EquipmentPart.Ring2
       val newCharacter = getCharacterWithNewItem(dbItem, emptyCharacter, equipmentPart, Seq.empty)
 
-      newCharacter should be (emptyCharacter.equipArmor(dbItem.id.get, equipmentPart))
+      newCharacter should be (emptyCharacter.equipArmor(dbItem.id, equipmentPart))
     }
 
     "equip twoHanded weapon not in mainHand slot throw exception" in {

@@ -4,7 +4,7 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import config.AppConfig._
 import game.items.{Armor, ArmorType, Item, Shield, Weapon}
-import models.{CharacterModel, DbCharacter, DbItem, EquipItemRequest, EquipmentPart, InventoryModel, Token, User, UserModel}
+import models.{CharacterModel, DbCharacter, DbItem, EquipItemRequest, EquipmentPart, InventoryModel, Token, UnequipItemRequest, User, UserModel}
 import spray.json._
 import models.JsonSupport._
 import util.AppExceptions
@@ -43,6 +43,14 @@ object InventoryController {
     }
   }
 
+  def unequipItem(token: Token) = {
+    entity(as[UnequipItemRequest]) { unequipItemRequest =>
+      onComplete(_unequipItem(token, unequipItemRequest)) {
+        case Success(_) => complete(StatusCodes.OK)
+      }
+    }
+  }
+
   private def _equipItem(token: Token, equipItemRequest: EquipItemRequest): Future[Int] = {
     db.run(UserModel.getUserByUserId(token.user_id.toInt)).flatMap {
       case Some(u) => Future(UserModel.toUser(u))
@@ -64,6 +72,23 @@ object InventoryController {
 
           db.run(CharacterModel.upsert(newCharacter))
         }
+    }
+  }
+
+  private def _unequipItem(token: Token, unequipItemRequest: UnequipItemRequest): Future[Int] = {
+    db.run(UserModel.getUserByUserId(token.user_id.toInt)).flatMap {
+      case Some(u) => Future(UserModel.toUser(u))
+      case None => throw new AppExceptions.UserNotFound
+    }.flatMap { user =>
+      db.run(CharacterModel.getCharacter(user)).map(CharacterModel.toDbCharacter)
+    }.flatMap { character =>
+      val newCharacter = unequipItemRequest.equipmentPart match {
+        case MainHand => character.equipMainHand(None)
+        case OffHand => character.equipOffHand(None)
+        case _ => character.equipArmor(None, unequipItemRequest.equipmentPart)
+      }
+
+      db.run(CharacterModel.upsert(newCharacter))
     }
   }
 
@@ -116,9 +141,9 @@ object InventoryController {
         else
           character.equipWeapon(item.id, equipmentPart)
       case a: Armor if a.armorType == ArmorType.Ring && (equipmentPart == Ring1 || equipmentPart == Ring2) =>
-        character.equipArmor(item.id.get, equipmentPart)
+        character.equipArmor(item.id, equipmentPart)
       case a: Armor if a.armorType.toString == equipmentPart.toString =>
-        character.equipArmor(item.id.get, equipmentPart)
+        character.equipArmor(item.id, equipmentPart)
       case _ => throw new AppExceptions.EquipPartAndItemNotCompatible
     }
   }

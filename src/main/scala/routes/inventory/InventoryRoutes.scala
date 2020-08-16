@@ -8,11 +8,10 @@ import InventoryController._
 object InventoryRoutes {
   def apply(): Route = {
     Authenticate.customAuthorization { token =>
-      concat(
-        path("inventory")(get(getInventory(token))),
-        path("inventory")(post(createItem(token))),
-        path("inventory" / "equip")(post(equipItem(token)))
-      )
+      path("inventory")(get(getInventory(token))) ~
+      path("inventory")(post(createItem(token))) ~
+      path("inventory" / "equip")(post(equipItem(token))) ~
+      path("inventory" / "unequip")(post(unequipItem(token)))
     }
   }
 }

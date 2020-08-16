@@ -1,9 +1,5 @@
 package models
-import config.AppConfig._
-import game.items.{ActiveEffect, Body, Helmet, PassiveEffect}
 import util.MyPostgresProfile.api._
-
-import scala.concurrent.Future
 
 object CharacterModel extends TableQuery(new Character(_)){
 
@@ -74,31 +70,31 @@ case class DbCharacter(
       .filter(_.isDefined)
       .map(_.get)
 
-  def equipArmor(itemId: Int, equipmentPart: EquipmentPart.Type) =
+  def equipArmor(itemId: Option[Int], equipmentPart: EquipmentPart.Type) =
     equipmentPart match {
       case EquipmentPart.Helmet =>
-        DbCharacter(id, userId, Some(itemId), body, gloves, boots, belt, amulet, ring1, ring2, mainHand, offHand)
+        this.copy(helmet = itemId)
       case EquipmentPart.Body =>
-        DbCharacter(id, userId, helmet, Some(itemId), gloves, boots, belt, amulet, ring1, ring2, mainHand, offHand)
+        this.copy(body = itemId)
       case EquipmentPart.Gloves =>
-        DbCharacter(id, userId, helmet, body, Some(itemId), boots, belt, amulet, ring1, ring2, mainHand, offHand)
+        this.copy(gloves = itemId)
       case EquipmentPart.Boots =>
-        DbCharacter(id, userId, helmet, body, gloves, Some(itemId), belt, amulet, ring1, ring2, mainHand, offHand)
+        this.copy(boots = itemId)
       case EquipmentPart.Belt =>
-        DbCharacter(id, userId, helmet, body, gloves, boots, Some(itemId), amulet, ring1, ring2, mainHand, offHand)
+        this.copy(belt = itemId)
       case EquipmentPart.Amulet =>
-        DbCharacter(id, userId, helmet, body, gloves, boots, belt, Some(itemId), ring1, ring2, mainHand, offHand)
+        this.copy(amulet = itemId)
       case EquipmentPart.Ring1 =>
-        DbCharacter(id, userId, helmet, body, gloves, boots, belt, amulet, Some(itemId), ring2, mainHand, offHand)
+        this.copy(ring1 = itemId)
       case EquipmentPart.Ring2 =>
-        DbCharacter(id, userId, helmet, body, gloves, boots, belt, amulet, ring1, Some(itemId), mainHand, offHand)
+        this.copy(ring2 = itemId)
     }
 
   def equipMainHand(itemId: Option[Int]) =
-    DbCharacter(id, userId, helmet, body, gloves, boots, belt, amulet, ring1, ring2, itemId, offHand)
+    this.copy(mainHand = itemId)
 
   def equipOffHand(itemId: Option[Int]) =
-    DbCharacter(id, userId, helmet, body, gloves, boots, belt, amulet, ring1, ring2, mainHand, itemId)
+    this.copy(offHand = itemId)
 
   def equipWeapon(itemId: Option[Int], equipmentPart: EquipmentPart.Type) =
     equipmentPart match {
