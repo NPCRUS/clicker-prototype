@@ -94,7 +94,7 @@ case class EffectEnd(
   timestamp: Int,
   effect: ActiveEffect,
 ) extends Action {
-  override def _type: Type = ActionType.EffectApplication
+  override def _type: Type = ActionType.EffectEnd
 
   override def toString: String =
     s"${effect._type}(${effect.change} ${effect.target.toString}) is ended on ${target.toString}, ${timestampStr}"

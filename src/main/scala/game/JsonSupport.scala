@@ -218,7 +218,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
     }
   }
   implicit val swordProtocol: RootJsonFormat[Sword] = new WeaponTypedProtocol[Sword](Sword.apply)
-  implicit val spearProtocol: RootJsonFormat[Polearm] = new WeaponTypedProtocol[Polearm](Polearm.apply)
+  implicit val polearmProtocol: RootJsonFormat[Polearm] = new WeaponTypedProtocol[Polearm](Polearm.apply)
   implicit object daggerProtocol extends WeaponTypedProtocol[Dagger](
     (str, int1, int2, bool, damageType,  pe, ae) => items.Dagger(str, int1, int2, damageType, pe, ae)
   ) {
@@ -304,7 +304,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
     override def write(obj: TwoHandedHandle): JsValue = {
       JsObject(
         "mainHand" -> obj.mainHand.toJson,
-        "_type" -> obj.mainHand._type.toJson
+        "_type" -> obj._type.toJson
       )
     }
 
