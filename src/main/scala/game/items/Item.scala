@@ -1,5 +1,7 @@
 package game.items
 
+import game.items.ActiveEffectType.Type
+
 import scala.util.Random
 
 trait Item {
@@ -41,29 +43,32 @@ trait ActiveEffect {
 }
 
 case class OneTimeActiveEffect(
-  _type: ActiveEffectType.Type,
   target: EffectTargetType.Type,
   chance: Double,
   change: Int,
   self: Boolean
-) extends ActiveEffect
+) extends ActiveEffect {
+  override def _type: Type = ActiveEffectType.OneTime
+}
 
 case class PeriodicActiveEffect(
-  _type: ActiveEffectType.Type,
   target: EffectTargetType.Type,
   chance: Double,
   change: Int,
   self: Boolean,
   ticks: Int,
   tickCd: Int
-) extends ActiveEffect
+) extends ActiveEffect {
+  override def _type: Type = ActiveEffectType.Periodic
+}
 
 case class LastingActiveEffect(
-  _type: ActiveEffectType.Type,
   target: EffectTargetType.Type,
   chance: Double,
   change: Int,
   self: Boolean,
   duration: Int
-) extends ActiveEffect
+) extends ActiveEffect {
+  override def _type: Type = ActiveEffectType.Lasting
+}
 

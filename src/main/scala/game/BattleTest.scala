@@ -11,7 +11,7 @@ object BattleTest extends App {
     20,
     DamageType.Physical,
     List(PassiveEffect(EffectTargetType.ColdRes, 1000)),
-    List(PeriodicActiveEffect(ActiveEffectType.Periodic, EffectTargetType.Hp, chance = 1.0, change = 10, self = true, 4, 2000)))
+    List(PeriodicActiveEffect(EffectTargetType.Hp, chance = 1.0, change = 10, self = true, 4, 2000)))
   val handle1 = OneHandedHandle(knife, None)
   val pawn1 = Pawn("Mate", handle1, ArmorSet.empty, InitialProperties())
 

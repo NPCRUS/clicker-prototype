@@ -11,7 +11,6 @@ import JsonSupport._
 class JsonSupportSpec extends AnyWordSpecLike with Matchers {
   val passiveEffect: PassiveEffect = PassiveEffect(EffectTargetType.Armor, 100)
   val activeEffect: OneTimeActiveEffect = OneTimeActiveEffect(
-    ActiveEffectType.OneTime,
     EffectTargetType.Armor,
     0.2,
     10,
@@ -40,7 +39,6 @@ class JsonSupportSpec extends AnyWordSpecLike with Matchers {
 
     "PeriodicActiveEffect should serialize and deserialize" in {
       val effect = PeriodicActiveEffect(
-        ActiveEffectType.Periodic,
         EffectTargetType.Armor,
         0.2,
         1,
@@ -55,7 +53,6 @@ class JsonSupportSpec extends AnyWordSpecLike with Matchers {
 
     "LastingActiveEffect should serialize and deserialize" in {
       val effect = LastingActiveEffect(
-        ActiveEffectType.Lasting,
         EffectTargetType.Armor,
         0.2,
         1,

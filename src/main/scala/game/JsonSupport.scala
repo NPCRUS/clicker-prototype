@@ -88,11 +88,80 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
     }
   }
 
+  // EFFECTS
   implicit val passiveEffectProtocol: RootJsonFormat[PassiveEffect] = jsonFormat2(PassiveEffect)
 
-  implicit val oneTimeActiveEffectProtocol: RootJsonFormat[OneTimeActiveEffect] = jsonFormat5(OneTimeActiveEffect)
-  implicit val periodicActiveEffectProtocol: RootJsonFormat[PeriodicActiveEffect] = jsonFormat7(PeriodicActiveEffect)
-  implicit val lastingActiveEffectProtocol: RootJsonFormat[LastingActiveEffect] = jsonFormat6(LastingActiveEffect)
+  implicit object OneTimeActiveEffectFormat extends RootJsonFormat[OneTimeActiveEffect] {
+    override def write(obj: OneTimeActiveEffect): JsValue = {
+      JsObject(
+        "target" -> obj.target.toJson,
+        "chance" -> JsNumber(obj.chance),
+        "change" -> JsNumber(obj.change),
+        "self" -> JsBoolean(obj.self),
+        "_type" -> obj._type.toJson
+      )
+    }
+
+    override def read(json: JsValue): OneTimeActiveEffect = {
+      val fields = json.asJsObject.fields
+      OneTimeActiveEffect(
+        fields("target").convertTo[EffectTargetType.Type],
+        fields("chance").convertTo[Double],
+        fields("change").convertTo[Int],
+        fields("self").convertTo[Boolean]
+      )
+    }
+  }
+
+  implicit object PeriodicActiveEffectFormat extends RootJsonFormat[PeriodicActiveEffect] {
+    override def write(obj: PeriodicActiveEffect): JsValue = {
+      JsObject(
+        "target" -> obj.target.toJson,
+        "chance" -> JsNumber(obj.chance),
+        "change" -> JsNumber(obj.change),
+        "self" -> JsBoolean(obj.self),
+        "ticks" -> JsNumber(obj.ticks),
+        "tickCd" -> JsNumber(obj.tickCd),
+        "_type" -> obj._type.toJson
+      )
+    }
+
+    override def read(json: JsValue): PeriodicActiveEffect = {
+      val fields = json.asJsObject.fields
+      PeriodicActiveEffect(
+        fields("target").convertTo[EffectTargetType.Type],
+        fields("chance").convertTo[Double],
+        fields("change").convertTo[Int],
+        fields("self").convertTo[Boolean],
+        fields("ticks").convertTo[Int],
+        fields("tickCd").convertTo[Int]
+      )
+    }
+  }
+
+  implicit object LastingActiveEffectFormat extends RootJsonFormat[LastingActiveEffect] {
+    override def write(obj: LastingActiveEffect): JsValue = {
+      JsObject(
+        "target" -> obj.target.toJson,
+        "chance" -> JsNumber(obj.chance),
+        "change" -> JsNumber(obj.change),
+        "self" -> JsBoolean(obj.self),
+        "duration" -> JsNumber(obj.duration),
+        "_type" -> obj._type.toJson
+      )
+    }
+
+    override def read(json: JsValue): LastingActiveEffect = {
+      val fields = json.asJsObject.fields
+      LastingActiveEffect(
+        fields("target").convertTo[EffectTargetType.Type],
+        fields("chance").convertTo[Double],
+        fields("change").convertTo[Int],
+        fields("self").convertTo[Boolean],
+        fields("duration").convertTo[Int]
+      )
+    }
+  }
 
   implicit object ActiveEffectFormat extends RootJsonFormat[ActiveEffect] {
     override def write(obj: ActiveEffect): JsValue = obj match {
