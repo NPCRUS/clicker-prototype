@@ -4,14 +4,6 @@ import game.items.ItemType.Type
 
 import scala.util.Random
 
-object Weapon {
-  def unapply(arg: Weapon): Option[Weapon] = arg match {
-    case s: Sword => Some(s)
-    case d: Dagger => Some(d)
-    case p: Polearm => Some(p)
-  }
-}
-
 trait Weapon extends Item {
   def weaponType: WeaponType.Type
   def baseDamage: Int

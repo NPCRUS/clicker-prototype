@@ -1,9 +1,6 @@
 package models
 
-import config.AppConfig
 import slick.jdbc.H2Profile.api._
-
-import scala.concurrent.Future
 
 object UserModel extends TableQuery(new Users(_)){
   def getUserByUserId(userId: Int) = this.filter(_.userId === userId)
@@ -17,7 +14,7 @@ object UserModel extends TableQuery(new Users(_)){
   }
 
   def toUser(u: Users#TableElementType): User =
-    User(u.id, u.opaqueUserId, u.chanelId, u.role, u.isUnlinked, u.userId)
+    User(u.id, u.opaqueUserId, u.channelId, u.role, u.isUnlinked, u.userId)
 }
 
 class Users(tag: Tag) extends Table[User](tag, "users") {
@@ -36,7 +33,7 @@ class Users(tag: Tag) extends Table[User](tag, "users") {
 case class User(
   id: Option[Int],
   opaqueUserId: String,
-  chanelId: String,
+  channelId: String,
   role: String,
   isUnlinked: Boolean,
   userId: Int,

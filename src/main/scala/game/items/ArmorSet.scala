@@ -22,13 +22,13 @@ case class ArmorSet(
   // TODO: make second ring wearable
   def wear(a: Armor): ArmorSet = {
     a match {
-      case a: Helmet => ArmorSet(Some(a), body, gloves, boots, belt, amulet, ring1, ring2)
-      case a: Body => ArmorSet(helmet, Some(a), gloves, boots, belt, amulet, ring1, ring2)
-      case a: Gloves => ArmorSet(helmet, body, Some(a), boots, belt, amulet, ring1, ring2)
-      case a: Boots => ArmorSet(helmet, body, gloves, Some(a), belt, amulet, ring1, ring2)
-      case a: Belt => ArmorSet(helmet, body, gloves, boots, Some(a), amulet, ring1, ring2)
-      case a: Amulet => ArmorSet(helmet, body, gloves, boots, belt, Some(a), ring1, ring2)
-      case a: Ring => ArmorSet(helmet, body, gloves, boots, belt, amulet, Some(a), ring2)
+      case a: Helmet => this.copy(helmet = Some(a))
+      case a: Body => this.copy(body = Some(a))
+      case a: Gloves => this.copy(gloves = Some(a))
+      case a: Boots => this.copy(boots = Some(a))
+      case a: Belt => this.copy(belt = Some(a))
+      case a: Amulet => this.copy(amulet = Some(a))
+      case a: Ring => this.copy(ring1 = Some(a))
       case _ => this
     }
   }
