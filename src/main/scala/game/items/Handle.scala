@@ -5,6 +5,17 @@ object HandleType extends Enumeration {
   val DualHand, TwoHand, OneHand = Value
 }
 
+object Handle {
+  def apply(mainHand: Option[Item], offHand: Option[Item]): Handle = {
+    (mainHand, offHand) match {
+      case (Some(w: Weapon), _) if w.twoHanded => TwoHandedHandle(w)
+      case (Some(w1: Weapon), Some(w2: Weapon)) => DualHandle(w1, w2)
+      case (Some(w: Weapon), Some(s: Shield)) => OneHandedHandle(w, Some(s))
+      case (Some(w: Weapon), None) => OneHandedHandle(w, None)
+    }
+  }
+}
+
 trait Handle {
   def getWeapons: List[Item]
   def _type: HandleType.Type

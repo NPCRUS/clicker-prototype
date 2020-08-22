@@ -1,6 +1,9 @@
 package models
 
-import game.items.ArmorType
+import game.items._
+import spray.json._
+import game.JsonSupport._
+import JsonSupport._
 
 case class BattlePost(
   mapLevel: Int
@@ -39,4 +42,47 @@ case class EquipItemRequest(
 
 case class UnequipItemRequest(
   equipmentPart: EquipmentPart.Type
+)
+
+case class DbCharacterWithDbItems(
+  id: Option[Int],
+  userId: Int,
+  helmet: Option[DbItem],
+  body: Option[DbItem],
+  gloves: Option[DbItem],
+  boots: Option[DbItem],
+  belt: Option[DbItem],
+  amulet: Option[DbItem],
+  ring1: Option[DbItem],
+  ring2: Option[DbItem],
+  mainHand: Option[DbItem],
+  offHand: Option[DbItem]
+) {
+  def toDbCharacterWithItems: DbCharacterWithItems = {
+    DbCharacterWithItems(
+      id,
+      userId,
+      ArmorSet(
+        helmet.map(_.toJson.convertTo[Helmet]),
+        body.map(_.toJson.convertTo[Body]),
+        gloves.map(_.toJson.convertTo[Gloves]),
+        boots.map(_.toJson.convertTo[Boots]),
+        belt.map(_.toJson.convertTo[Belt]),
+        amulet.map(_.toJson.convertTo[Amulet]),
+        ring1.map(_.toJson.convertTo[Ring]),
+        ring2.map(_.toJson.convertTo[Ring])
+      ),
+      Handle(
+        mainHand.map(_.toJson.convertTo[Weapon]),
+        offHand.map(_.toJson.convertTo[Item])
+      )
+    )
+  }
+}
+
+case class DbCharacterWithItems(
+  id: Option[Int],
+  userId: Int,
+  armorSet: ArmorSet,
+  handle: Handle
 )

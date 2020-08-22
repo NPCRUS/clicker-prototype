@@ -38,39 +38,28 @@ class MeRoute {
     }
   }
 
-
-  private def _getEquippedItems(token: Token): Future[CharacterResponse] = {
-    def getItem(id: Option[Int], items: Seq[DbItem]): Option[DbItem] = {
-      if(id.isEmpty) None
-      else items.find(_.id == id)
-    }
-
+  private def _getEquippedItems(token: Token): Future[CharacterResponse] =
     db.run(UserModel.getUserByUserId(token.user_id.toInt)).flatMap {
       case Some(u) => Future(UserModel.toUser(u))
       case None => throw new AppExceptions.UserNotFound
     }.flatMap { user =>
-      for {
-        character <- db.run(CharacterModel.getCharacter(user)).map(CharacterModel.toDbCharacter)
-        items <- db.run(InventoryModel.getItemsByIds(character.getIds)).map(_.map(InventoryModel.toDbItem))
-      } yield {
-        CharacterResponse(
-          ArmorSetResponse(
-            helmet = getItem(character.helmet, items),
-            body = getItem(character.body, items),
-            gloves = getItem(character.gloves, items),
-            boots = getItem(character.boots, items),
-            belt = getItem(character.belt, items),
-            amulet = getItem(character.amulet, items),
-            ring1 = getItem(character.ring1, items),
-            ring2 = getItem(character.ring2, items)
-          ),
-          HandleResponse(
-            mainHand = getItem(character.mainHand, items),
-            offHand = getItem(character.offHand, items)
-          )
+      Transactions.getCharacterWithDbItems(user)
+    }.map { c =>
+      CharacterResponse(
+        ArmorSetResponse(
+          helmet = c.helmet,
+          body = c.body,
+          gloves = c.gloves,
+          boots = c.boots,
+          belt = c.belt,
+          amulet = c.amulet,
+          ring1 = c.ring1,
+          ring2 = c.ring2
+        ),
+        HandleResponse(
+          mainHand = c.mainHand,
+          offHand = c.offHand
         )
-      }
+      )
     }
-
-  }
 }
