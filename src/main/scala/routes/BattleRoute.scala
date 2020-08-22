@@ -4,7 +4,6 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import config.AppConfig
 import game._
-import game.items._
 import models._
 import models.JsonSupport._
 import util.AppExceptions._

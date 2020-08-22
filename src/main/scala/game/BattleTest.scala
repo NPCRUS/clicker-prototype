@@ -1,8 +1,6 @@
 package game
 
-// import spray.json._
-// import JsonSupport._
-import game.items.{ActiveEffectType, ArmorSet, Body, Dagger, DamageType, EffectTargetType, OneHandedHandle, PassiveEffect, PeriodicActiveEffect, Polearm, TwoHandedHandle}
+import game.items._
 
 object BattleTest extends App {
   val knife = Dagger(
@@ -12,7 +10,13 @@ object BattleTest extends App {
     DamageType.Physical,
     List(PassiveEffect(EffectTargetType.ColdRes, 1000)),
     List(PeriodicActiveEffect(EffectTargetType.Hp, chance = 1.0, change = 10, self = true, 4, 2000)))
-  val handle1 = OneHandedHandle(knife, None)
+  val sword = Sword(
+    "sword",
+    7500,
+    15,
+    twoHanded = false
+  )
+  val handle1 = DualHandle(knife, sword)
   val pawn1 = Pawn("Mate", handle1, ArmorSet.empty, InitialProperties())
 
   val pitchfork = Polearm(
