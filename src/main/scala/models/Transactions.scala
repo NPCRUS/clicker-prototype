@@ -1,12 +1,13 @@
 package models
 
+import util.AppConfig
 import scala.concurrent.Future
-import config.AppConfig._
 import util.MyPostgresProfile.api._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object Transactions {
+object Transactions
+  extends AppConfig {
   def createUser(token: Token): Future[User] = {
     db.run(
       (for {

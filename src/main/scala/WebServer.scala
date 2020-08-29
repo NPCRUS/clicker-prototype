@@ -1,13 +1,15 @@
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import config.AppConfig
+import util.AppConfig
 
 import scala.concurrent.ExecutionContext
 
-object WebServer extends App {
+object WebServer
+  extends App
+    with AppConfig {
   implicit val system: ActorSystem = ActorSystem("web-server")
   implicit val executionContext: ExecutionContext = system.dispatcher
   sys.addShutdownHook(system.terminate())
 
-  val bindingFuture = Http().bindAndHandle(Router(), AppConfig.config.getString("host"), AppConfig.config.getString("port").toInt)
+  val bindingFuture = Http().bindAndHandle(Router(), config.getString("host"), config.getString("port").toInt)
 }

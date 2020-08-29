@@ -1,7 +1,7 @@
 package models
 
-import config.AppConfig
 import game.items.{ActiveEffect, PassiveEffect}
+import util.AppConfig._
 import util.MyPostgresProfile.api._
 
 import scala.concurrent.Future
@@ -18,7 +18,7 @@ object InventoryModel extends TableQuery(new Inventory(_)) {
     this.filter(_.id.inSet(ids)).result
 
   def insert(item: DbItem): Future[DbItem] = {
-    AppConfig.db.run(
+    db.run(
       (this returning this.map(_.id)
         into ((item, id) => item.copy(id = Some(id)))
         ) += item

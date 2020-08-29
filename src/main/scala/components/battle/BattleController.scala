@@ -1,17 +1,18 @@
 package components.battle
 
-import config.AppConfig
 import game.{Action, Battle, Generator, InitialProperties, Pawn}
 import models.{BattlePost, Token, Transactions, UserModel}
+import util.AppConfig
 import util.AppExceptions.{MapLevelExcessException, UserNotFound}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class BattleController {
+class BattleController
+  extends AppConfig {
 
   def battle(token: Token, battlePost: BattlePost): Future[List[Action]] = {
-    AppConfig.db.run(UserModel.getUserByUserId(token.user_id.toInt)).map {
+    db.run(UserModel.getUserByUserId(token.user_id.toInt)).map {
       case Some(u) =>
         if(battlePost.mapLevel <= u.maxMapLevel) u
         else throw new MapLevelExcessException

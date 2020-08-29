@@ -1,18 +1,18 @@
 package components.inventory
 
-import config.AppConfig._
 import game.items.{Armor, ArmorType, Item, Shield, Weapon}
 import models.{CharacterModel, DbCharacter, DbItem, EquipItemRequest, EquipmentPart, InventoryModel, Token, UnequipItemRequest, User, UserModel}
 import spray.json._
 import models.JsonSupport._
-import util.AppExceptions
+import util.{AppConfig, AppExceptions}
 import EquipmentPart._
 import game.JsonSupport.ItemFormat
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class InventoryController {
+class InventoryController
+  extends AppConfig {
 
   def equipItem(token: Token, equipItemRequest: EquipItemRequest): Future[Int] = {
     db.run(UserModel.getUserByUserId(token.user_id.toInt)).flatMap {

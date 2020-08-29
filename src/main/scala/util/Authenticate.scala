@@ -5,7 +5,6 @@ import java.util.Base64
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.{Directive1, Directives}
-import config.AppConfig
 import javax.crypto.spec.SecretKeySpec
 import models.JsonSupport._
 import models.Token

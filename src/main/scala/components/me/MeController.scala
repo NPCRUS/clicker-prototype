@@ -1,17 +1,16 @@
 package components.me
 
-import config.AppConfig
-import config.AppConfig.db
 import models.{ArmorSetResponse, CharacterResponse, HandleResponse, Token, Transactions, User, UserModel}
-import util.AppExceptions
+import util.{AppConfig, AppExceptions}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class MeController {
+class MeController
+  extends AppConfig {
 
   def me(token: Token): Future[User] = {
-    AppConfig.db.run(UserModel.getUserByUserId(token.user_id.toInt)).flatMap {
+    db.run(UserModel.getUserByUserId(token.user_id.toInt)).flatMap {
       case Some(u) => Future(u)
       case None => Transactions.createUser(token)
     }.map { u =>
