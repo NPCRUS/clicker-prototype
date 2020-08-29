@@ -1,34 +1,16 @@
-package routes
+package components.battle
 
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.Route
 import config.AppConfig
-import game._
-import models._
-import models.JsonSupport._
-import util.AppExceptions._
+import game.{Action, Battle, Generator, InitialProperties, Pawn}
+import models.{BattlePost, Token, Transactions, UserModel}
+import util.AppExceptions.{MapLevelExcessException, UserNotFound}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.{Failure, Success}
 
-class BattleRoute {
-  import game.JsonSupport._
+class BattleController {
 
-  def getRoutes: Route = path("battle") {
-    Authenticate.customAuthorization { token =>
-      post {
-        entity(as[BattlePost])(battlePost =>
-          onComplete(battle(token, battlePost)) {
-            case Success(result) => complete(result)
-            case Failure(exception) => throw exception
-          }
-        )
-      }
-    }
-  }
-
-  private def battle(token: Token, battlePost: BattlePost): Future[List[Action]] = {
+  def battle(token: Token, battlePost: BattlePost): Future[List[Action]] = {
     AppConfig.db.run(UserModel.getUserByUserId(token.user_id.toInt)).map {
       case Some(u) =>
         if(battlePost.mapLevel <= u.maxMapLevel) u

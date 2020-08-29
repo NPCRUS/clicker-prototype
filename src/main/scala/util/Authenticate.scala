@@ -1,4 +1,4 @@
-package routes
+package util
 
 import java.util.Base64
 
@@ -7,9 +7,10 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.{Directive1, Directives}
 import config.AppConfig
 import javax.crypto.spec.SecretKeySpec
+import models.JsonSupport._
 import models.Token
 import pdi.jwt.{JwtAlgorithm, JwtSprayJson}
-import models.JsonSupport._
+
 import scala.util.{Failure, Success}
 
 object Authenticate extends Directives with SprayJsonSupport {
@@ -26,9 +27,9 @@ object Authenticate extends Directives with SprayJsonSupport {
               val token = value.convertTo[Token]
               provide(token)
             } catch {
-              case ex: Throwable => complete(StatusCodes.Unauthorized, "jwt token payload is malformed")
+              case _: Throwable => complete(StatusCodes.Unauthorized, "jwt token payload is malformed")
             }
-          case Failure(claim) =>
+          case Failure(_) =>
             complete(StatusCodes.Unauthorized, "jwt token error")
         }
       case _ => complete(StatusCodes.Unauthorized, "authorization header is not readable")

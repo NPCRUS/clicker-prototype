@@ -1,7 +1,5 @@
-package routes.inventory
+package components.inventory
 
-import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.server.Directives._
 import config.AppConfig._
 import game.items.{Armor, ArmorType, Item, Shield, Weapon}
 import models.{CharacterModel, DbCharacter, DbItem, EquipItemRequest, EquipmentPart, InventoryModel, Token, UnequipItemRequest, User, UserModel}
@@ -9,49 +7,14 @@ import spray.json._
 import models.JsonSupport._
 import util.AppExceptions
 import EquipmentPart._
+import game.JsonSupport.ItemFormat
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
 
-object InventoryController {
-  import game.JsonSupport._
+class InventoryController {
 
-  def getInventory(token: Token) = {
-    onComplete(_getInventory(token)) {
-      case Success(result) => complete(result)
-      case Failure(exception) => throw exception
-    }
-  }
-
-  def createItem(token: Token) = {
-    entity(as[Item]) { item =>
-      onComplete(_createItem(token, item)) {
-        case Success(item) => complete(item)
-        case Failure(exception) => throw exception
-      }
-    }
-  }
-
-  def equipItem(token: Token) = {
-    entity(as[EquipItemRequest]) { equipItemRequest =>
-      onComplete(_equipItem(token, equipItemRequest)) {
-        case Success(value) => complete(StatusCodes.OK)
-        case Failure(exception) =>
-          throw exception
-      }
-    }
-  }
-
-  def unequipItem(token: Token) = {
-    entity(as[UnequipItemRequest]) { unequipItemRequest =>
-      onComplete(_unequipItem(token, unequipItemRequest)) {
-        case Success(_) => complete(StatusCodes.OK)
-      }
-    }
-  }
-
-  private def _equipItem(token: Token, equipItemRequest: EquipItemRequest): Future[Int] = {
+  def equipItem(token: Token, equipItemRequest: EquipItemRequest): Future[Int] = {
     db.run(UserModel.getUserByUserId(token.user_id.toInt)).flatMap {
       case Some(u) => Future(UserModel.toUser(u))
       case None => throw new AppExceptions.UserNotFound
@@ -75,7 +38,7 @@ object InventoryController {
     }
   }
 
-  private def _unequipItem(token: Token, unequipItemRequest: UnequipItemRequest): Future[Int] = {
+  def unequipItem(token: Token, unequipItemRequest: UnequipItemRequest): Future[Int] = {
     db.run(UserModel.getUserByUserId(token.user_id.toInt)).flatMap {
       case Some(u) => Future(UserModel.toUser(u))
       case None => throw new AppExceptions.UserNotFound
@@ -92,7 +55,7 @@ object InventoryController {
     }
   }
 
-  private def _createItem(token: Token, item: Item): Future[DbItem] = {
+  def createItem(token: Token, item: Item): Future[DbItem] = {
     def armorToDbItem(a: Armor, u: User): DbItem =
       DbItem(None, a.name, a.cd, a._type.toString, a.passiveEffects, a.activeEffects, u.id.get, Some(a.armor), Some(a.armorType.toString), None, None, None, None)
 
@@ -111,7 +74,7 @@ object InventoryController {
     }
   }
 
-  private def _getInventory(token: Token): Future[List[DbItem]] = {
+  def getInventory(token: Token): Future[List[DbItem]] = {
     db.run(UserModel.getUserByUserId(token.user_id.toInt)).map {
       case Some(u) => u
       case None => throw new AppExceptions.UserNotFound
