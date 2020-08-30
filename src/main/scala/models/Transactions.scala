@@ -12,19 +12,19 @@ object Transactions
     db.run(
       (for {
         user <- UserModel.createFromToken(token)
-        _ <- CharacterModel.create(user.id.get)
+        _ <- CharacterModel.create(user.id)
       } yield user).transactionally
     )
   }
 
   def getCharacterWithDbItems(user: User): Future[DbCharacterWithDbItems] = {
     for {
-      character <- db.run(CharacterModel.getCharacter(user)).map(CharacterModel.toDbCharacter)
-      equippedItems <- db.run(InventoryModel.getItemsByIds(character.getIds)).map(_.map(InventoryModel.toDbItem))
+      character <- db.run(CharacterModel.getCharacter(user))
+      equippedItems <- db.run(InventoryModel.getItemsByIds(character.getIds))
     } yield {
       def find(id: Option[Int]): Option[DbItem] = {
         id.flatMap { id =>
-          equippedItems.find(_.id.get == id)
+          equippedItems.find(_.id == id)
         }
       }
 

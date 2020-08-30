@@ -17,7 +17,7 @@ object Router {
   def middlewares(r: Route): Route = {
     cors() {
       handleErrors {
-        concat(r)
+        r
       }
     }
   }
@@ -34,20 +34,22 @@ object Router {
   val battleRoute = new BattleRoute(battleController)
 
   def apply(): Route = middlewares {
-    // health
-    path("health")(healthRoute.health)
+    concat(
+      // health
+      path("health")(healthRoute.health),
 
-    // me
-    path("me")(meRoute.me)
-    path("me" / "character")(meRoute.meCharacter)
+      // me
+      path("me")(meRoute.me),
+      path("me" / "character")(meRoute.meCharacter),
 
-    // inventory
-    path("inventory")(inventoryRoute.inventory)
-    path("inventory" / "equip")(inventoryRoute.equip)
-    path("inventory" / "unequip")(inventoryRoute.unequip)
+      // inventory
+      path("inventory")(inventoryRoute.inventory),
+      path("inventory" / "equip")(inventoryRoute.equip),
+      path("inventory" / "unequip")(inventoryRoute.unequip),
 
-    // battle routes
-    path("battle")(battleRoute.battle)
+      // battle routes
+      path("battle")(battleRoute.battle)
+    )
   }
 }
 

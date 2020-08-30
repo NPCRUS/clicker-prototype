@@ -1,33 +1,20 @@
 package models
+import slick.dbio.Effect
+import slick.lifted.ProvenShape
+import slick.sql.{FixedSqlAction, SqlAction}
 import util.MyPostgresProfile.api._
 
 object CharacterModel extends TableQuery(new Character(_)){
 
-  def getCharacter(user: User) =
+  def getCharacter(user: User): SqlAction[DbCharacter, NoStream, Effect.Read] =
     this.filter(_.userId === user.id).result.head
 
-  def create(userId: Int) =
-    this += DbCharacter(None, userId, None, None, None, None, None, None, None, None, None, None)
+  def create(userId: Int): FixedSqlAction[Int, NoStream, Effect.Write] =
+    this += DbCharacter(0, userId, None, None, None, None, None, None, None, None, None, None)
 
-  def upsert(character: DbCharacter) = {
+  def upsert(character: DbCharacter): FixedSqlAction[Int, NoStream, Effect.Write] = {
     this.insertOrUpdate(character)
   }
-
-  def toDbCharacter(c: Character#TableElementType): DbCharacter =
-    DbCharacter(
-      c.id,
-      c.userId,
-      c.helmet,
-      c.body,
-      c.gloves,
-      c.boots,
-      c.belt,
-      c.amulet,
-      c.ring1,
-      c.ring2,
-      c.mainHand,
-      c.offHand
-    )
 }
 
 class Character(tag: Tag) extends Table[DbCharacter](tag, "character") {
@@ -44,15 +31,15 @@ class Character(tag: Tag) extends Table[DbCharacter](tag, "character") {
   def mainHand = column[Int]("main_hand")
   def offHand = column[Int]("off_hand")
 
-  def * =
-    (id.?, userId, helmet.?, body.?, gloves.?, boots.?, belt.?, amulet.?, ring1.?, ring2.?, mainHand.?, offHand.?)
+  def * : ProvenShape[DbCharacter] =
+    (id, userId, helmet.?, body.?, gloves.?, boots.?, belt.?, amulet.?, ring1.?, ring2.?, mainHand.?, offHand.?)
       .mapTo[DbCharacter]
 
   def user = foreignKey("character_fk", userId, UserModel)(_.id, onUpdate = ForeignKeyAction.Cascade)
 }
 
 case class DbCharacter(
-  id: Option[Int],
+  id: Int,
   userId: Int,
   helmet: Option[Int],
   body: Option[Int],
@@ -70,7 +57,7 @@ case class DbCharacter(
       .filter(_.isDefined)
       .map(_.get)
 
-  def equipArmor(itemId: Option[Int], equipmentPart: EquipmentPart.Type) =
+  def equipArmor(itemId: Option[Int], equipmentPart: EquipmentPart.Type): DbCharacter =
     equipmentPart match {
       case EquipmentPart.Helmet =>
         this.copy(helmet = itemId)
@@ -90,13 +77,13 @@ case class DbCharacter(
         this.copy(ring2 = itemId)
     }
 
-  def equipMainHand(itemId: Option[Int]) =
+  def equipMainHand(itemId: Option[Int]): DbCharacter =
     this.copy(mainHand = itemId)
 
-  def equipOffHand(itemId: Option[Int]) =
+  def equipOffHand(itemId: Option[Int]): DbCharacter =
     this.copy(offHand = itemId)
 
-  def equipWeapon(itemId: Option[Int], equipmentPart: EquipmentPart.Type) =
+  def equipWeapon(itemId: Option[Int], equipmentPart: EquipmentPart.Type): DbCharacter =
     equipmentPart match {
       case EquipmentPart.MainHand => this.equipMainHand(itemId)
       case EquipmentPart.OffHand => this.equipOffHand(itemId)

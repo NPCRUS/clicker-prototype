@@ -13,14 +13,12 @@ class MeController
     db.run(UserModel.getUserByUserId(token.user_id.toInt)).flatMap {
       case Some(u) => Future(u)
       case None => Transactions.createUser(token)
-    }.map { u =>
-      UserModel.toUser(u)
     }
   }
 
   def getEquippedItems(token: Token): Future[CharacterResponse] =
-    db.run(UserModel.getUserByUserId(token.user_id.toInt)).flatMap {
-      case Some(u) => Future(UserModel.toUser(u))
+    db.run(UserModel.getUserByUserId(token.user_id.toInt)).map {
+      case Some(u) => u
       case None => throw new AppExceptions.UserNotFound
     }.flatMap { user =>
       Transactions.getCharacterWithDbItems(user)

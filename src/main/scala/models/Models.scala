@@ -45,7 +45,7 @@ case class UnequipItemRequest(
 )
 
 case class DbCharacterWithDbItems(
-  id: Option[Int],
+  id: Int,
   userId: Int,
   helmet: Option[DbItem],
   body: Option[DbItem],
@@ -81,7 +81,7 @@ case class DbCharacterWithDbItems(
 }
 
 case class DbCharacterWithItems(
-  id: Option[Int],
+  id: Int,
   userId: Int,
   armorSet: ArmorSet,
   handle: Handle

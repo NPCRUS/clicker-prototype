@@ -1,20 +1,18 @@
 package models
 
+import slick.dbio.Effect
 import slick.jdbc.H2Profile.api._
+import slick.lifted.ProvenShape
+import slick.sql.{FixedSqlAction, SqlAction}
 
 object UserModel extends TableQuery(new Users(_)){
-  def getUserByUserId(userId: Int) = this.filter(_.userId === userId)
+  def getUserByUserId(userId: Int): SqlAction[Option[User], NoStream, Effect.Read] = this.filter(_.userId === userId)
     .result
     .headOption
 
-  def createFromToken(token: Token) = {
-      (this returning this.map(_.id)
-        into ((user, id) => user.copy(id = Some(id)))
-      ) += User(None, token.opaque_user_id, token.channel_id, token.role, token.is_unlinked, token.user_id.toInt)
+  def createFromToken(token: Token): FixedSqlAction[User, NoStream, Effect.Write] = {
+      (this returning this) += User(0, token.opaque_user_id, token.channel_id, token.role, token.is_unlinked, token.user_id.toInt)
   }
-
-  def toUser(u: Users#TableElementType): User =
-    User(u.id, u.opaqueUserId, u.channelId, u.role, u.isUnlinked, u.userId)
 }
 
 class Users(tag: Tag) extends Table[User](tag, "users") {
@@ -26,12 +24,12 @@ class Users(tag: Tag) extends Table[User](tag, "users") {
   def userId = column[Int]("user_id")
   def maxMapLevel = column[Int]("max_map_level", O.Default(1))
 
-  def * =
-    (id.?, opaqueUserId, channelId, role, isUnlinked, userId, maxMapLevel).mapTo[User]
+  def * : ProvenShape[User] =
+    (id, opaqueUserId, channelId, role, isUnlinked, userId, maxMapLevel).mapTo[User]
 }
 
 case class User(
-  id: Option[Int],
+  id: Int,
   opaqueUserId: String,
   channelId: String,
   role: String,

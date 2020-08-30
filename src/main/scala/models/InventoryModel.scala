@@ -1,6 +1,9 @@
 package models
 
 import game.items.{ActiveEffect, PassiveEffect}
+import slick.dbio.Effect
+import slick.lifted.ProvenShape
+import slick.sql.{FixedSqlStreamingAction, SqlAction}
 import util.AppConfig._
 import util.MyPostgresProfile.api._
 
@@ -8,25 +11,20 @@ import scala.concurrent.Future
 
 object InventoryModel extends TableQuery(new Inventory(_)) {
 
-  def getUserInventory(user: User) =
+  def getUserInventory(user: User): FixedSqlStreamingAction[Seq[DbItem], DbItem, Effect.Read] =
     this.filter(_.userId === user.id).result
 
-  def getItemByIdAndUser(id: Int, user: User) =
+  def getItemByIdAndUser(id: Int, user: User): SqlAction[Option[DbItem], NoStream, Effect.Read] =
     this.filter(i => i.userId === user.id && i.id === id).result.headOption
 
-  def getItemsByIds(ids: Seq[Int]) =
+  def getItemsByIds(ids: Seq[Int]): FixedSqlStreamingAction[Seq[DbItem], DbItem, Effect.Read] =
     this.filter(_.id.inSet(ids)).result
 
   def insert(item: DbItem): Future[DbItem] = {
-    db.run(
-      (this returning this.map(_.id)
-        into ((item, id) => item.copy(id = Some(id)))
-        ) += item
-    )
+    db.run {
+      (this returning this) += item
+    }
   }
-
-  def toDbItem(i: Inventory#TableElementType): DbItem =
-    DbItem(i.id, i.name, i.cd, i._type, i.passiveEffects, i.activeEffects, i.user_id, i.armor, i.armorType, i.weaponType, i.baseDamage, i.twoHanded, i.damageType)
 }
 
 class Inventory(tag: Tag) extends Table[DbItem](tag, "inventory") {
@@ -44,15 +42,15 @@ class Inventory(tag: Tag) extends Table[DbItem](tag, "inventory") {
   def twoHanded = column[Boolean]("two_handed")
   def damageType = column[String]("damage_type")
 
-  def * =
-    (id.?, name, cd, _type, passiveEffects, activeEffects, userId, armor.?, armorType.?, weaponType.?, baseDamage.?, twoHanded.?, damageType.?)
+  def * : ProvenShape[DbItem] =
+    (id, name, cd, _type, passiveEffects, activeEffects, userId, armor.?, armorType.?, weaponType.?, baseDamage.?, twoHanded.?, damageType.?)
       .mapTo[DbItem]
 
   def user = foreignKey("inventory_fk", userId, UserModel)(_.id, onUpdate=ForeignKeyAction.Cascade, onDelete=ForeignKeyAction.Cascade)
 }
 
 case class DbItem(
-  id: Option[Int],
+  id: Int,
   name: String,
   cd: Int,
   _type: String,
