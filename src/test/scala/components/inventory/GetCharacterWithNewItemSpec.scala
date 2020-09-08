@@ -250,7 +250,8 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
           None,
           None,
           None,
-          None
+          None,
+          a.rarity.toString
         )
       case w: Weapon =>
         DbItem(
@@ -266,7 +267,8 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
           Some(w.weaponType.toString),
           Some(w.baseDamage),
           Some(w.twoHanded),
-          Some(w.damageType.toString)
+          Some(w.damageType.toString),
+          w.rarity.toString
         )
     }
 }

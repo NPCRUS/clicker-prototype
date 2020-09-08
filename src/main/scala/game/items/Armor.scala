@@ -17,6 +17,7 @@ case class Helmet(
   name: String,
   cd: Int,
   armor: Int,
+  rarity: Rarity.Type = Rarity.Mediocre,
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Armor {
@@ -27,6 +28,7 @@ case class Body(
   name: String,
   cd: Int,
   armor: Int,
+  rarity: Rarity.Type = Rarity.Mediocre,
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Armor {
@@ -37,6 +39,7 @@ case class Gloves(
   name: String,
   cd: Int,
   armor: Int,
+  rarity: Rarity.Type = Rarity.Mediocre,
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Armor {
@@ -47,6 +50,7 @@ case class Boots(
   name: String,
   cd: Int,
   armor: Int,
+  rarity: Rarity.Type = Rarity.Mediocre,
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Armor {
@@ -57,6 +61,7 @@ case class Belt(
   name: String,
   cd: Int,
   armor: Int,
+  rarity: Rarity.Type = Rarity.Mediocre,
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Armor {
@@ -67,6 +72,7 @@ case class Amulet(
   name: String,
   cd: Int,
   armor: Int,
+  rarity: Rarity.Type = Rarity.Mediocre,
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Armor {
@@ -77,6 +83,7 @@ case class Ring(
   name: String,
   cd: Int,
   armor: Int,
+  rarity: Rarity.Type = Rarity.Mediocre,
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Armor {
@@ -87,6 +94,7 @@ case class Shield(
   name: String,
   cd: Int,
   armor: Int,
+  rarity: Rarity.Type = Rarity.Mediocre,
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Armor {

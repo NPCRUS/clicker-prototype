@@ -8,6 +8,7 @@ trait Item {
   def name: String
   def cd: Int
   def _type: ItemType.Type
+  def rarity: Rarity.Type
   def passiveEffects: List[PassiveEffect]
   def activeEffects: List[ActiveEffect]
 }
@@ -15,6 +16,11 @@ trait Item {
 object ItemType extends Enumeration {
   type Type = Value
   val Weapon, Armor = Value
+}
+
+object Rarity extends Enumeration {
+  type Type = Value
+  val Mediocre, Common, Masterpiece = Value
 }
 
 object EffectTargetType extends Enumeration {

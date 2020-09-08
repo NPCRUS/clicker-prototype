@@ -55,10 +55,10 @@ class InventoryController
 
   def createItem(token: Token, item: Item): Future[DbItem] = {
     def armorToDbItem(a: Armor, u: User): DbItem =
-      DbItem(0, a.name, a.cd, a._type.toString, a.passiveEffects, a.activeEffects, u.id, Some(a.armor), Some(a.armorType.toString), None, None, None, None)
+      DbItem(0, a.name, a.cd, a._type.toString, a.passiveEffects, a.activeEffects, u.id, Some(a.armor), Some(a.armorType.toString), None, None, None, None, a.rarity.toString)
 
     def weaponToDbItem(w: Weapon, u: User): DbItem =
-      DbItem(0, w.name, w.cd, w._type.toString, w.passiveEffects, w.activeEffects, u.id, None, None, Some(w.weaponType.toString), Some(w.baseDamage), Some(w.twoHanded), Some(w.damageType.toString))
+      DbItem(0, w.name, w.cd, w._type.toString, w.passiveEffects, w.activeEffects, u.id, None, None, Some(w.weaponType.toString), Some(w.baseDamage), Some(w.twoHanded), Some(w.damageType.toString), w.rarity.toString)
 
     db.run(UserModel.getUserByUserId(token.user_id.toInt)).map {
       case Some(u) => u

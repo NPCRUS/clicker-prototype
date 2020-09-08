@@ -41,6 +41,7 @@ case class Sword(
   baseDamage: Int,
   twoHanded: Boolean,
   damageType: DamageType.Type = DamageType.Physical,
+  rarity: Rarity.Type = Rarity.Mediocre,
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Weapon {
@@ -52,6 +53,7 @@ case class Dagger(
   cd: Int,
   baseDamage: Int,
   damageType: DamageType.Type = DamageType.Physical,
+  rarity: Rarity.Type = Rarity.Mediocre,
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Weapon {
@@ -65,6 +67,7 @@ case class Polearm(
   baseDamage: Int,
   twoHanded: Boolean,
   damageType: DamageType.Type = DamageType.Physical,
+  rarity: Rarity.Type = Rarity.Mediocre,
   passiveEffects: List[PassiveEffect] = List.empty,
   activeEffects: List[ActiveEffect] = List.empty
 ) extends Weapon {

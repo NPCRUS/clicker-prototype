@@ -16,6 +16,15 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
     }
   }
 
+  implicit object RarityFormat extends RootJsonFormat[Rarity.Type] {
+    override def write(obj: Rarity.Type): JsValue = JsString(obj.toString)
+
+    override def read(json: JsValue): Rarity.Type = json match {
+      case JsString(str) => Rarity.withName(str)
+      case unknown => deserializationError(s"json deserialize error: $unknown")
+    }
+  }
+
   implicit object ArmorTypeFormat extends RootJsonFormat[ArmorType.Type] {
     override def write(obj: ArmorType.Type): JsValue = JsString(obj.toString)
 
@@ -186,13 +195,14 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
 
   // ARMOR
   class ArmorTypedProtocol[T <: Armor](
-    factory: (String, Int, Int, List[PassiveEffect], List[ActiveEffect]) => T
+    factory: (String, Int, Int, Rarity.Type, List[PassiveEffect], List[ActiveEffect]) => T
   ) extends RootJsonFormat[T] {
     override def write(obj: T): JsValue = {
       JsObject(
         "name" -> JsString(obj.name),
         "cd" -> JsNumber(obj.cd),
         "armor" -> JsNumber(obj.armor),
+        "rarity" -> obj.rarity.toJson,
         "armorType" -> obj.armorType.toJson,
         "_type" -> obj._type.toJson,
         "passiveEffects" -> obj.passiveEffects.toJson,
@@ -206,6 +216,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
         fields("name").convertTo[String],
         fields("cd").convertTo[Int],
         fields("armor").convertTo[Int],
+        fields("rarity").convertTo[Rarity.Type],
         fields("passiveEffects").convertTo[List[PassiveEffect]],
         fields("activeEffects").convertTo[List[ActiveEffect]]
       )
@@ -257,7 +268,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
 
   // WEAPON
   class WeaponTypedProtocol[T <: Weapon](
-    factory: (String, Int, Int, Boolean, DamageType.Type, List[PassiveEffect], List[ActiveEffect]) => T
+    factory: (String, Int, Int, Boolean, DamageType.Type, Rarity.Type, List[PassiveEffect], List[ActiveEffect]) => T
   ) extends RootJsonFormat[T] {
     override def write(obj: T): JsValue = {
       JsObject(
@@ -266,6 +277,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
         "baseDamage" -> JsNumber(obj.baseDamage),
         "twoHanded" -> JsBoolean(obj.twoHanded),
         "damageType" -> obj.damageType.toJson,
+        "rarity" -> obj.rarity.toJson,
         "weaponType" -> obj.weaponType.toJson,
         "_type" -> obj._type.toJson,
         "passiveEffects" -> obj.passiveEffects.toJson,
@@ -281,6 +293,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
         fields("baseDamage").convertTo[Int],
         fields("twoHanded").convertTo[Boolean],
         fields("damageType").convertTo[DamageType.Type],
+        fields("rarity").convertTo[Rarity.Type],
         fields("passiveEffects").convertTo[List[PassiveEffect]],
         fields("activeEffects").convertTo[List[ActiveEffect]]
       )
@@ -289,7 +302,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val swordProtocol: RootJsonFormat[Sword] = new WeaponTypedProtocol[Sword](Sword.apply)
   implicit val polearmProtocol: RootJsonFormat[Polearm] = new WeaponTypedProtocol[Polearm](Polearm.apply)
   implicit object daggerProtocol extends WeaponTypedProtocol[Dagger](
-    (str, int1, int2, bool, damageType,  pe, ae) => items.Dagger(str, int1, int2, damageType, pe, ae)
+    (str, int1, int2, bool, damageType, rarity, pe, ae) => items.Dagger(str, int1, int2, damageType, rarity, pe, ae)
   ) {
     override def read(json: JsValue): Dagger = {
       val fields = json.asJsObject.fields
@@ -298,6 +311,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
         fields("cd").convertTo[Int],
         fields("baseDamage").convertTo[Int],
         fields("damageType").convertTo[DamageType.Type],
+        fields("rarity").convertTo[Rarity.Type],
         fields("passiveEffects").convertTo[List[PassiveEffect]],
         fields("activeEffects").convertTo[List[ActiveEffect]]
       )

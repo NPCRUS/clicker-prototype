@@ -9,10 +9,12 @@ object Generator {
       cd = 7000,
       15,
       twoHanded = true,
-      DamageType.Physical, List(PassiveEffect(EffectTargetType.ColdMit, 1000))
+      DamageType.Physical,
+      Rarity.Mediocre,
+      List(PassiveEffect(EffectTargetType.ColdMit, 1000))
     )
     val handle2 = TwoHandedHandle(pitchfork)
-    val body = Body("best", 10000, 100, List.empty)
+    val body = Body("best", 10000, 100, Rarity.Mediocre, List.empty)
     val armorSet = ArmorSet(None, Some(body), None, None, None, None, None, None)
 
     Pawn("John", handle2, armorSet, InitialProperties(100))

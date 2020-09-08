@@ -41,9 +41,10 @@ class Inventory(tag: Tag) extends Table[DbItem](tag, "inventory") {
   def baseDamage = column[Int]("base_damage")
   def twoHanded = column[Boolean]("two_handed")
   def damageType = column[String]("damage_type")
+  def rarity = column[String]("rarity")
 
   def * : ProvenShape[DbItem] =
-    (id, name, cd, _type, passiveEffects, activeEffects, userId, armor.?, armorType.?, weaponType.?, baseDamage.?, twoHanded.?, damageType.?)
+    (id, name, cd, _type, passiveEffects, activeEffects, userId, armor.?, armorType.?, weaponType.?, baseDamage.?, twoHanded.?, damageType.?, rarity)
       .mapTo[DbItem]
 
   def user = foreignKey("inventory_fk", userId, UserModel)(_.id, onUpdate=ForeignKeyAction.Cascade, onDelete=ForeignKeyAction.Cascade)
@@ -62,5 +63,6 @@ case class DbItem(
   weaponType: Option[String],
   baseDamage: Option[Int],
   twoHanded: Option[Boolean],
-  damageType: Option[String]
+  damageType: Option[String],
+  rarity: String
 )
