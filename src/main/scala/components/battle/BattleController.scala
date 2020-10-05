@@ -12,7 +12,7 @@ class BattleController
   extends AppConfig {
 
   def battle(user: User, battlePost: BattlePost): Future[List[Action]] = {
-    if(battlePost.mapLevel >= user.maxMapLevel) throw new MapLevelExcessException
+    if(battlePost.mapLevel > user.maxMapLevel) throw new MapLevelExcessException
     else {
       Transactions.getCharacterWithDbItems(user).map((_, user)) map { res =>
         val (characterWithDbItems, user) = res
@@ -24,7 +24,7 @@ class BattleController
           InitialProperties()
         )
 
-        val enemyBot = Generator.generateBotEnemy(character, battlePost.mapLevel)
+        val enemyBot = Generator.generateBotEnemy(battlePost.mapLevel)
 
         val battle = new Battle(character, enemyBot)
         val actions = battle.calculate()

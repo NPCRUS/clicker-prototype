@@ -8,8 +8,11 @@ import scala.util.Failure
 
 object AppExceptions {
   def apply(f: Throwable) = f match {
-    case e: AppDefinedException => complete(e.statusCode, e.toString)
+    case e: AppDefinedException =>
+      println(e.toString)
+      complete(e.statusCode, e.toString)
     case e: Throwable =>
+      println(e.toString)
       complete(StatusCodes.InternalServerError, e.toString)
   }
 
