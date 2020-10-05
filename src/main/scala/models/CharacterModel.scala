@@ -2,7 +2,7 @@ package models
 import slick.dbio.Effect
 import slick.lifted.ProvenShape
 import slick.sql.{FixedSqlAction, SqlAction}
-import util.MyPostgresProfile.api._
+import utils.MyPostgresProfile.api._
 
 object CharacterModel extends TableQuery(new Character(_)){
 

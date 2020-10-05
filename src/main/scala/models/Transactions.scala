@@ -1,8 +1,8 @@
 package models
 
-import util.AppConfig
+import utils.AppConfig
 import scala.concurrent.Future
-import util.MyPostgresProfile.api._
+import utils.MyPostgresProfile.api._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -11,8 +11,9 @@ object Transactions
   def createUser(token: Token): Future[User] = {
     db.run(
       (for {
-        user <- UserModel.createFromToken(token)
-        _ <- CharacterModel.create(user.id)
+        id <- UserModel.createFromToken(token)
+        _ <- CharacterModel.create(id)
+        user <- UserModel.filter(_.id === id).result.head
       } yield user).transactionally
     )
   }

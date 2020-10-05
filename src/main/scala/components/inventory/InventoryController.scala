@@ -4,7 +4,7 @@ import game.items.{Armor, ArmorType, Item, Shield, Weapon}
 import models.{CharacterModel, DbCharacter, DbItem, EquipItemRequest, EquipmentPart, InventoryModel, Token, UnequipItemRequest, User, UserModel}
 import spray.json._
 import models.JsonSupport._
-import util.{AppConfig, AppExceptions}
+import utils.{AppConfig, AppExceptions}
 import EquipmentPart._
 import game.JsonSupport.ItemFormat
 
@@ -14,17 +14,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class InventoryController
   extends AppConfig {
 
-  def equipItem(token: Token, equipItemRequest: EquipItemRequest): Future[Int] = {
-    db.run(UserModel.getUserByUserId(token.user_id.toInt)).map {
-      case Some(u) => u
-      case None => throw new AppExceptions.UserNotFound
-    }.flatMap { user =>
-      for {
-        item <- db.run(InventoryModel.getItemByIdAndUser(equipItemRequest.itemId, user))
-        character <- db.run(CharacterModel.getCharacter(user))
-        equippedItems <- db.run(InventoryModel.getItemsByIds(character.getIds))
-      } yield (item, character, equippedItems)
-    }.flatMap {
+  def equipItem(user: User, equipItemRequest: EquipItemRequest): Future[Int] = {
+    (for {
+      item <- db.run(InventoryModel.getItemByIdAndUser(equipItemRequest.itemId, user))
+      character <- db.run(CharacterModel.getCharacter(user))
+      equippedItems <- db.run(InventoryModel.getItemsByIds(character.getIds))
+    } yield (item, character, equippedItems)) flatMap {
       case (None, _, _) => throw new AppExceptions.ItemNotFound
       case (Some(item), character, equippedItems) =>
         if(item.user_id != character.userId) throw new AppExceptions.ItemNotFound
@@ -36,13 +31,8 @@ class InventoryController
     }
   }
 
-  def unequipItem(token: Token, unequipItemRequest: UnequipItemRequest): Future[Int] = {
-    db.run(UserModel.getUserByUserId(token.user_id.toInt)).map {
-      case Some(u) => u
-      case None => throw new AppExceptions.UserNotFound
-    }.flatMap { user =>
-      db.run(CharacterModel.getCharacter(user))
-    }.flatMap { character =>
+  def unequipItem(user: User, unequipItemRequest: UnequipItemRequest): Future[Int] = {
+    db.run(CharacterModel.getCharacter(user)) flatMap { character =>
       val newCharacter = unequipItemRequest.equipmentPart match {
         case MainHand => character.equipMainHand(None)
         case OffHand => character.equipOffHand(None)
@@ -53,35 +43,25 @@ class InventoryController
     }
   }
 
-  def createItem(token: Token, item: Item): Future[DbItem] = {
+  def createItem(user: User, item: Item): Future[DbItem] = {
     def armorToDbItem(a: Armor, u: User): DbItem =
       DbItem(0, a.name, a.cd, a._type.toString, a.passiveEffects, a.activeEffects, u.id, Some(a.armor), Some(a.armorType.toString), None, None, None, None, a.rarity.toString)
 
     def weaponToDbItem(w: Weapon, u: User): DbItem =
       DbItem(0, w.name, w.cd, w._type.toString, w.passiveEffects, w.activeEffects, u.id, None, None, Some(w.weaponType.toString), Some(w.baseDamage), Some(w.twoHanded), Some(w.damageType.toString), w.rarity.toString)
 
-    db.run(UserModel.getUserByUserId(token.user_id.toInt)).map {
-      case Some(u) => u
-      case None => throw new AppExceptions.UserNotFound
-    }.flatMap { user =>
-      val dbItem = item match {
-        case a: Armor => armorToDbItem(a, user)
-        case w: Weapon => weaponToDbItem(w, user)
-      }
-      InventoryModel.insert(dbItem)
+    val dbItem = item match {
+      case a: Armor => armorToDbItem(a, user)
+      case w: Weapon => weaponToDbItem(w, user)
     }
+    InventoryModel.insert(dbItem)
   }
 
-  def getInventory(token: Token): Future[List[DbItem]] = {
-    db.run(UserModel.getUserByUserId(token.user_id.toInt)).map {
-      case Some(u) => u
-      case None => throw new AppExceptions.UserNotFound
-    }.flatMap { user =>
-      db.run(InventoryModel.getUserInventory(user)).map(_.toList)
-    }
+  def getInventory(user: User): Future[List[DbItem]] = {
+    db.run(InventoryModel.getUserInventory(user)).map(_.toList)
   }
 
-  def getCharacterWithNewItem(item: DbItem, character: DbCharacter, equipmentPart: EquipmentPart.Type, equippedItems: Seq[DbItem]): DbCharacter = {
+  private[inventory] def getCharacterWithNewItem(item: DbItem, character: DbCharacter, equipmentPart: EquipmentPart.Type, equippedItems: Seq[DbItem]): DbCharacter = {
     val gameItem = item.toJson.convertTo[Item]
     gameItem match {
       case _: Shield if equipmentPart == OffHand =>

@@ -1,25 +1,23 @@
 package components.me
 
-import akka.http.scaladsl.server.Directives.{complete, get, onComplete}
+import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import models.JsonSupport._
-import util.Authenticate
+import utils.Authenticator
 
-import scala.util.Success
+class MeRoute(meController: MeController)(implicit auth: Authenticator) {
 
-class MeRoute(meController: MeController) {
-
-  def me: Route = Authenticate.customAuthorization { token =>
-      get {
-        onComplete(meController.me(token)) {
-          case Success(result) => complete(result)
-        }
-      }
+  def me: Route = auth.jwtAuthWithUser { user =>
+     get {
+      complete(user)
+    }
   }
 
-  def meCharacter: Route = Authenticate.customAuthorization { token =>
-    onComplete(meController.getEquippedItems(token)) {
-      case Success(result) => complete(result)
+  def meCharacter: Route = auth.jwtAuthWithUser { user =>
+    get {
+      onSuccess(meController.getEquippedItems(user)) { characterResponse =>
+        complete(characterResponse)
+      }
     }
   }
 }

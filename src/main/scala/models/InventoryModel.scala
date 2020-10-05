@@ -4,8 +4,8 @@ import game.items.{ActiveEffect, PassiveEffect}
 import slick.dbio.Effect
 import slick.lifted.ProvenShape
 import slick.sql.{FixedSqlStreamingAction, SqlAction}
-import util.AppConfig._
-import util.MyPostgresProfile.api._
+import utils.AppConfig._
+import utils.MyPostgresProfile.api._
 
 import scala.concurrent.Future
 

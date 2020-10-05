@@ -3,7 +3,7 @@ package components.inventory
 import game.items._
 import models.{DbCharacter, DbItem }
 import models.EquipmentPart
-import util.AppExceptions._
+import utils.AppExceptions._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 

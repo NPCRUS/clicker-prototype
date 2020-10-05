@@ -10,8 +10,8 @@ object UserModel extends TableQuery(new Users(_)){
     .result
     .headOption
 
-  def createFromToken(token: Token): FixedSqlAction[User, NoStream, Effect.Write] = {
-      (this returning this) += User(0, token.opaque_user_id, token.channel_id, token.role, token.is_unlinked, token.user_id.toInt)
+  def createFromToken(token: Token): FixedSqlAction[Int, NoStream, Effect.Write] = {
+    (this returning this.map(_.id)) += User(0, token.opaque_user_id, token.channel_id, token.role, token.is_unlinked, token.user_id.toInt)
   }
 }
 

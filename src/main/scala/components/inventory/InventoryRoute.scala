@@ -5,44 +5,38 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.model.StatusCodes
 import game.items.Item
 import models.{EquipItemRequest, UnequipItemRequest}
-import util.Authenticate
+import utils.Authenticator
 import models.JsonSupport._
 import game.JsonSupport.ItemFormat
 
-import scala.util.{Failure, Success}
-
-class InventoryRoute(controller: InventoryController) {
-  def inventory: Route = Authenticate.customAuthorization { token =>
+class InventoryRoute(controller: InventoryController)(implicit auth: Authenticator) {
+  def inventory: Route = auth.jwtAuthWithUser { user =>
     get {
-      onComplete(controller.getInventory(token)) {
-        case Success(result) => complete(result)
-        case Failure(exception) => throw exception
+      onSuccess(controller.getInventory(user)) { result =>
+        complete(result)
       }
     } ~
     post {
       entity(as[Item]) { item =>
-        onComplete(controller.createItem(token, item)) {
-          case Success(item) => complete(item)
-          case Failure(exception) => throw exception
+        onSuccess(controller.createItem(user, item)) { item =>
+          complete(item)
         }
       }
     }
   }
 
-  def equip: Route = Authenticate.customAuthorization { token =>
+  def equip: Route = auth.jwtAuthWithUser { user =>
     entity(as[EquipItemRequest]) { equipItemRequest =>
-      onComplete(controller.equipItem(token, equipItemRequest)) {
-        case Success(value) => complete(StatusCodes.OK)
-        case Failure(exception) =>
-          throw exception
+      onSuccess(controller.equipItem(user, equipItemRequest)) { _ =>
+        complete(StatusCodes.OK)
       }
     }
   }
 
-  def unequip: Route = Authenticate.customAuthorization { token =>
+  def unequip: Route = auth.jwtAuthWithUser { user =>
     entity(as[UnequipItemRequest]) { unequipItemRequest =>
-      onComplete(controller.unequipItem(token, unequipItemRequest)) {
-        case Success(_) => complete(StatusCodes.OK)
+      onSuccess(controller.unequipItem(user, unequipItemRequest)) { _ =>
+        complete(StatusCodes.OK)
       }
     }
   }

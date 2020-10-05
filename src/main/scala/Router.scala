@@ -5,7 +5,7 @@ import components.battle.{BattleController, BattleRoute}
 import components.health.HealthRoute
 import components.inventory.{InventoryController, InventoryRoute}
 import components.me.{MeController, MeRoute}
-import util.AppExceptions
+import utils.{AppExceptions, Authenticator}
 
 object Router {
 
@@ -21,6 +21,10 @@ object Router {
       }
     }
   }
+
+  // services
+  implicit val authenticator: Authenticator = new Authenticator
+
 
   // controllers
   val meController = new MeController

@@ -1,4 +1,4 @@
-package util
+package utils
 
 import com.github.tminglei.slickpg.PgSprayJsonSupport
 import com.github.tminglei.slickpg.array.PgArrayJdbcTypes
