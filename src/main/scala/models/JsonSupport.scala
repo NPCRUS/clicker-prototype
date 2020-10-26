@@ -4,6 +4,7 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import spray.json._
 
 object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol with NullOptions {
+
   import game.JsonSupport._
 
   implicit val PubSubPermsProtocol: RootJsonFormat[PubSubPerms] = jsonFormat2(PubSubPerms)
@@ -14,7 +15,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol with NullOp
   implicit val battlePostProtocol: RootJsonFormat[BattlePost] = jsonFormat1(BattlePost)
 
   implicit val handleResponseProtocol: RootJsonFormat[HandleResponse] = jsonFormat2(HandleResponse)
-  implicit val armorSetResponseProtocol: RootJsonFormat[ArmorSetResponse] = jsonFormat8(ArmorSetResponse)
+  implicit val armorSetResponseProtocol: RootJsonFormat[ArmorSetResponse] = jsonFormat4(ArmorSetResponse)
   implicit val characterResponseProtocol: RootJsonFormat[CharacterResponse] = jsonFormat2(CharacterResponse)
 
   implicit object EquipmentPartFormat extends RootJsonFormat[EquipmentPart.Type] {
@@ -25,6 +26,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol with NullOp
       case unknown => deserializationError(s"json deserialize error: $unknown")
     }
   }
+
   implicit val equipItemRequest: RootJsonFormat[EquipItemRequest] = jsonFormat2(EquipItemRequest)
   implicit val unequipItemRequest: RootJsonFormat[UnequipItemRequest] = jsonFormat1(UnequipItemRequest)
 

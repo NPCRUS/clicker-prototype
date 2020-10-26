@@ -1,15 +1,15 @@
 package components.inventory
 
-import game.items.{Armor, ArmorType, Item, Shield, Weapon}
-import models.{CharacterModel, DbCharacter, DbItem, EquipItemRequest, EquipmentPart, InventoryModel, Token, UnequipItemRequest, User, UserModel}
-import spray.json._
-import models.JsonSupport._
-import utils.{AppConfig, AppExceptions}
-import EquipmentPart._
 import game.JsonSupport.ItemFormat
+import game.items._
+import models.EquipmentPart._
+import models.JsonSupport._
+import models._
+import spray.json._
+import utils.{AppConfig, AppExceptions}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class InventoryController
   extends AppConfig {
@@ -22,12 +22,36 @@ class InventoryController
     } yield (item, character, equippedItems)) flatMap {
       case (None, _, _) => throw new AppExceptions.ItemNotFound
       case (Some(item), character, equippedItems) =>
-        if(item.user_id != character.userId) throw new AppExceptions.ItemNotFound
-        if(character.getIds.contains(item.id)) throw new AppExceptions.ItemIsAlreadyEquipped
+        if (item.user_id != character.userId) throw new AppExceptions.ItemNotFound
+        if (character.getIds.contains(item.id)) throw new AppExceptions.ItemIsAlreadyEquipped
         else {
           val newCharacter = getCharacterWithNewItem(item, character, equipItemRequest.equipmentPart, equippedItems)
           db.run(CharacterModel.upsert(newCharacter))
         }
+    }
+  }
+
+  private[inventory] def getCharacterWithNewItem(item: DbItem, character: DbCharacter, equipmentPart: EquipmentPart.Type, equippedItems: Seq[DbItem]): DbCharacter = {
+    val gameItem = item.toJson.convertTo[Item]
+    gameItem match {
+      case _: Shield if equipmentPart == OffHand =>
+        if (equippedItems.exists(el => el.twoHanded.isDefined && el.twoHanded.get))
+          character.equipMainHand(None)
+            .equipOffHand(Some(item.id))
+        else
+          character.equipOffHand(Some(item.id))
+      case w: Weapon if w.twoHanded && equipmentPart == MainHand =>
+        character.equipOffHand(None)
+          .equipMainHand(Some(item.id))
+      case w: Weapon if !w.twoHanded && (equipmentPart == MainHand || equipmentPart == OffHand) =>
+        if (equippedItems.exists(el => el.twoHanded.isDefined && el.twoHanded.get))
+          character.equipMainHand(None)
+            .equipWeapon(Some(item.id), equipmentPart)
+        else
+          character.equipWeapon(Some(item.id), equipmentPart)
+      case a: Armor if a.armorType.toString == equipmentPart.toString =>
+        character.equipArmor(Some(item.id), equipmentPart)
+      case _ => throw new AppExceptions.EquipPartAndItemNotCompatible
     }
   }
 
@@ -59,31 +83,5 @@ class InventoryController
 
   def getInventory(user: User): Future[List[DbItem]] = {
     db.run(InventoryModel.getUserInventory(user)).map(_.toList)
-  }
-
-  private[inventory] def getCharacterWithNewItem(item: DbItem, character: DbCharacter, equipmentPart: EquipmentPart.Type, equippedItems: Seq[DbItem]): DbCharacter = {
-    val gameItem = item.toJson.convertTo[Item]
-    gameItem match {
-      case _: Shield if equipmentPart == OffHand =>
-        if(equippedItems.exists(el => el.twoHanded.isDefined && el.twoHanded.get))
-          character.equipMainHand(None)
-            .equipOffHand(Some(item.id))
-        else
-          character.equipOffHand(Some(item.id))
-      case w: Weapon if w.twoHanded && equipmentPart == MainHand =>
-        character.equipOffHand(None)
-          .equipMainHand(Some(item.id))
-      case w: Weapon if !w.twoHanded && (equipmentPart == MainHand || equipmentPart == OffHand) =>
-        if(equippedItems.exists(el => el.twoHanded.isDefined && el.twoHanded.get))
-          character.equipMainHand(None)
-            .equipWeapon(Some(item.id), equipmentPart)
-        else
-          character.equipWeapon(Some(item.id), equipmentPart)
-      case a: Armor if a.armorType == ArmorType.Ring && (equipmentPart == Ring1 || equipmentPart == Ring2) =>
-        character.equipArmor(Some(item.id), equipmentPart)
-      case a: Armor if a.armorType.toString == equipmentPart.toString =>
-        character.equipArmor(Some(item.id), equipmentPart)
-      case _ => throw new AppExceptions.EquipPartAndItemNotCompatible
-    }
   }
 }

@@ -1,10 +1,10 @@
 package models
 
 import utils.AppConfig
-import scala.concurrent.Future
 import utils.MyPostgresProfile.api._
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 object Transactions
   extends AppConfig {
@@ -34,12 +34,8 @@ object Transactions
         character.userId,
         find(character.helmet),
         find(character.body),
-        find(character.gloves),
-        find(character.boots),
-        find(character.belt),
+        find(character.greaves),
         find(character.amulet),
-        find(character.ring1),
-        find(character.ring2),
         find(character.mainHand),
         find(character.offHand)
       )

@@ -8,7 +8,7 @@ import utils.Authenticator
 class MeRoute(meController: MeController)(implicit auth: Authenticator) {
 
   def me: Route = auth.jwtAuthWithUser { user =>
-     get {
+    get {
       complete(user)
     }
   }

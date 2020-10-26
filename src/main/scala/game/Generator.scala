@@ -13,7 +13,7 @@ object Generator {
 
     val weapon = randomWeapon(mapLevel)
     val handle = OneHandedHandle(weapon, None)
-    val armorSet = ArmorSet(None, None, None, None, None, None, None, None)
+    val armorSet = ArmorSet(None, None, None, None)
 
     Pawn(generateBotName, handle, armorSet, initialProperties)
 

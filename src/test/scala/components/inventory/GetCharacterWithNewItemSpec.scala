@@ -1,25 +1,21 @@
 package components.inventory
 
 import game.items._
-import models.{DbCharacter, DbItem }
-import models.EquipmentPart
-import utils.AppExceptions._
+import models.{DbCharacter, DbItem, EquipmentPart}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
+import utils.AppExceptions._
 
-class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
+class GetCharacterWithNewItemSpec extends AnyWordSpecLike with Matchers {
   val helmet: Helmet = Helmet("helmet", 1, 1)
   val body: Body = Body("body", 1, 1)
-  val gloves: Gloves = Gloves("gloves", 1, 1)
-  val boots: Boots = Boots("boots", 1, 1)
-  val belt: Belt = Belt("belt", 1, 1)
+  val greaves: Greaves = Greaves("boots", 1, 1)
   val amulet: Amulet = Amulet("amulet", 1, 1)
-  val ring: Ring = Ring("ring", 1, 1)
   val oneHanded: Sword = Sword("sword", 1, 1, twoHanded = false)
   val otherOneHanded: Dagger = Dagger("dagger", 1, 1)
   val twoHanded: Sword = Sword("sword", 1, 1, twoHanded = true)
   val shield: Shield = Shield("shield", 1, 1)
-  val emptyCharacter: DbCharacter = DbCharacter(0, 0, None, None, None, None, None, None, None, None, None, None)
+  val emptyCharacter: DbCharacter = DbCharacter(0, 0, None, None, None, None, None, None)
 
   val controller = new InventoryController
 
@@ -27,7 +23,7 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
     "equip helmet into not helmet slot should throw exception" in {
       val dbItem = itemToDbItem(helmet)
 
-      an [EquipPartAndItemNotCompatible] should be thrownBy
+      an[EquipPartAndItemNotCompatible] should be thrownBy
         controller.getCharacterWithNewItem(dbItem, emptyCharacter, EquipmentPart.MainHand, Seq.empty)
     }
 
@@ -36,13 +32,13 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
       val equipmentPart = EquipmentPart.Helmet
       val newCharacter = controller.getCharacterWithNewItem(dbItem, emptyCharacter, equipmentPart, Seq.empty)
 
-      newCharacter should be (emptyCharacter.equipArmor(Some(dbItem.id), equipmentPart))
+      newCharacter should be(emptyCharacter.equipArmor(Some(dbItem.id), equipmentPart))
     }
 
     "equip body into not body slot should throw exception" in {
       val dbItem = itemToDbItem(body)
 
-      an [EquipPartAndItemNotCompatible] should be thrownBy
+      an[EquipPartAndItemNotCompatible] should be thrownBy
         controller.getCharacterWithNewItem(dbItem, emptyCharacter, EquipmentPart.MainHand, Seq.empty)
     }
 
@@ -51,58 +47,28 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
       val equipmentPart = EquipmentPart.Body
       val newCharacter = controller.getCharacterWithNewItem(dbItem, emptyCharacter, equipmentPart, Seq.empty)
 
-      newCharacter should be (emptyCharacter.equipArmor(Some(dbItem.id), equipmentPart))
-    }
-
-    "equip gloves into not gloves slot should throw exception" in {
-      val dbItem = itemToDbItem(gloves)
-
-      an [EquipPartAndItemNotCompatible] should be thrownBy
-        controller.getCharacterWithNewItem(dbItem, emptyCharacter, EquipmentPart.MainHand, Seq.empty)
-    }
-
-    "equip gloves into gloves slot should return new DbCharacter" in {
-      val dbItem = itemToDbItem(gloves)
-      val equipmentPart = EquipmentPart.Gloves
-      val newCharacter = controller.getCharacterWithNewItem(dbItem, emptyCharacter, equipmentPart, Seq.empty)
-
-      newCharacter should be (emptyCharacter.equipArmor(Some(dbItem.id), equipmentPart))
+      newCharacter should be(emptyCharacter.equipArmor(Some(dbItem.id), equipmentPart))
     }
 
     "equip boots into not boots slot should throw exception" in {
-      val dbItem = itemToDbItem(boots)
+      val dbItem = itemToDbItem(greaves)
 
-      an [EquipPartAndItemNotCompatible] should be thrownBy
+      an[EquipPartAndItemNotCompatible] should be thrownBy
         controller.getCharacterWithNewItem(dbItem, emptyCharacter, EquipmentPart.MainHand, Seq.empty)
     }
 
     "equip boots into boots slot should return new DbCharacter" in {
-      val dbItem = itemToDbItem(boots)
-      val equipmentPart = EquipmentPart.Boots
+      val dbItem = itemToDbItem(greaves)
+      val equipmentPart = EquipmentPart.Greaves
       val newCharacter = controller.getCharacterWithNewItem(dbItem, emptyCharacter, equipmentPart, Seq.empty)
 
-      newCharacter should be (emptyCharacter.equipArmor(Some(dbItem.id), equipmentPart))
-    }
-
-    "equip belt into not belt slot should throw exception" in {
-      val dbItem = itemToDbItem(belt)
-
-      an [EquipPartAndItemNotCompatible] should be thrownBy
-        controller.getCharacterWithNewItem(dbItem, emptyCharacter, EquipmentPart.MainHand, Seq.empty)
-    }
-
-    "equip belt into belt slot should return new DbCharacter" in {
-      val dbItem = itemToDbItem(belt)
-      val equipmentPart = EquipmentPart.Belt
-      val newCharacter = controller.getCharacterWithNewItem(dbItem, emptyCharacter, equipmentPart, Seq.empty)
-
-      newCharacter should be (emptyCharacter.equipArmor(Some(dbItem.id), equipmentPart))
+      newCharacter should be(emptyCharacter.equipArmor(Some(dbItem.id), equipmentPart))
     }
 
     "equip amulet into not amulet slot should throw exception" in {
       val dbItem = itemToDbItem(amulet)
 
-      an [EquipPartAndItemNotCompatible] should be thrownBy
+      an[EquipPartAndItemNotCompatible] should be thrownBy
         controller.getCharacterWithNewItem(dbItem, emptyCharacter, EquipmentPart.MainHand, Seq.empty)
     }
 
@@ -111,43 +77,13 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
       val equipmentPart = EquipmentPart.Amulet
       val newCharacter = controller.getCharacterWithNewItem(dbItem, emptyCharacter, equipmentPart, Seq.empty)
 
-      newCharacter should be (emptyCharacter.equipArmor(Some(dbItem.id), equipmentPart))
-    }
-
-    "equip ring into not ring1 slot should throw exception" in {
-      val dbItem = itemToDbItem(ring)
-
-      an [EquipPartAndItemNotCompatible] should be thrownBy
-        controller.getCharacterWithNewItem(dbItem, emptyCharacter, EquipmentPart.MainHand, Seq.empty)
-    }
-
-    "equip ring into ring1 slot should return new DbCharacter" in {
-      val dbItem = itemToDbItem(ring)
-      val equipmentPart = EquipmentPart.Ring1
-      val newCharacter = controller.getCharacterWithNewItem(dbItem, emptyCharacter, equipmentPart, Seq.empty)
-
-      newCharacter should be (emptyCharacter.equipArmor(Some(dbItem.id), equipmentPart))
-    }
-
-    "equip ring into not ring2 slot should throw exception" in {
-      val dbItem = itemToDbItem(ring)
-
-      an [EquipPartAndItemNotCompatible] should be thrownBy
-        controller.getCharacterWithNewItem(dbItem, emptyCharacter, EquipmentPart.MainHand, Seq.empty)
-    }
-
-    "equip ring into ring2 slot should return new DbCharacter" in {
-      val dbItem = itemToDbItem(ring)
-      val equipmentPart = EquipmentPart.Ring2
-      val newCharacter = controller.getCharacterWithNewItem(dbItem, emptyCharacter, equipmentPart, Seq.empty)
-
-      newCharacter should be (emptyCharacter.equipArmor(Some(dbItem.id), equipmentPart))
+      newCharacter should be(emptyCharacter.equipArmor(Some(dbItem.id), equipmentPart))
     }
 
     "equip twoHanded weapon not in mainHand slot throw exception" in {
       val dbItem = itemToDbItem(twoHanded)
 
-      an [EquipPartAndItemNotCompatible] should be thrownBy
+      an[EquipPartAndItemNotCompatible] should be thrownBy
         controller.getCharacterWithNewItem(dbItem, emptyCharacter, EquipmentPart.OffHand, Seq.empty)
     }
 
@@ -158,7 +94,7 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
       val character = emptyCharacter.equipOffHand(Some(oneHandedItem.id))
       val newCharacter = controller.getCharacterWithNewItem(dbItem, character, equipmentPart, Seq(oneHandedItem))
 
-      newCharacter should be (
+      newCharacter should be(
         character
           .equipOffHand(None)
           .equipMainHand(Some(dbItem.id))
@@ -168,7 +104,7 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
     "equip oneHanded not in hands throw exception" in {
       val dbItem = itemToDbItem(oneHanded)
 
-      an [EquipPartAndItemNotCompatible] should be thrownBy
+      an[EquipPartAndItemNotCompatible] should be thrownBy
         controller.getCharacterWithNewItem(dbItem, emptyCharacter, EquipmentPart.Helmet, Seq.empty)
     }
 
@@ -177,7 +113,7 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
       val equipmentPart = EquipmentPart.MainHand
       val newCharacter = controller.getCharacterWithNewItem(dbItem, emptyCharacter, equipmentPart, Seq.empty)
 
-      newCharacter should be (emptyCharacter.equipMainHand(Some(dbItem.id)))
+      newCharacter should be(emptyCharacter.equipMainHand(Some(dbItem.id)))
     }
 
     "equip oneHanded into offHand return new DbCharacter" in {
@@ -185,7 +121,7 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
       val equipmentPart = EquipmentPart.OffHand
       val newCharacter = controller.getCharacterWithNewItem(dbItem, emptyCharacter, equipmentPart, Seq.empty)
 
-      newCharacter should be (emptyCharacter.equipOffHand(Some(dbItem.id)))
+      newCharacter should be(emptyCharacter.equipOffHand(Some(dbItem.id)))
     }
 
     "equip oneHanded into mainHand unequips twoHanded weapon" in {
@@ -195,7 +131,7 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
       val character = emptyCharacter.equipMainHand(Some(twoHandedItem.id))
       val newCharacter = controller.getCharacterWithNewItem(dbItem, character, equipmentPart, Seq(twoHandedItem))
 
-      newCharacter should be (character.equipMainHand(Some(dbItem.id)))
+      newCharacter should be(character.equipMainHand(Some(dbItem.id)))
     }
 
     "equip oneHanded into offHand unequips twoHanded weapon" in {
@@ -205,7 +141,7 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
       val character = emptyCharacter.equipMainHand(Some(twoHandedItem.id))
       val newCharacter = controller.getCharacterWithNewItem(dbItem, character, equipmentPart, Seq(twoHandedItem))
 
-      newCharacter should be (
+      newCharacter should be(
         character
           .equipMainHand(None)
           .equipOffHand(Some(dbItem.id))
@@ -215,7 +151,7 @@ class GetCharacterWithNewItemSpec  extends AnyWordSpecLike with Matchers {
     "equip shield not in offHand slot throw exception" in {
       val dbItem = itemToDbItem(shield)
 
-      an [EquipPartAndItemNotCompatible] should be thrownBy
+      an[EquipPartAndItemNotCompatible] should be thrownBy
         controller.getCharacterWithNewItem(dbItem, emptyCharacter, EquipmentPart.MainHand, Seq.empty)
     }
 

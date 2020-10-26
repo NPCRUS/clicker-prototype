@@ -1,13 +1,17 @@
 package game
 
 import game.ActionType.Type
-import game.items.{ActiveEffect, Item, LastingActiveEffect, OneTimeActiveEffect, PeriodicActiveEffect, Weapon}
+import game.items._
 
 trait Action {
   def init: Opponent
+
   def target: Opponent
+
   def item: Item
+
   def timestamp: Int
+
   def _type: ActionType.Type
 
   def timestampStr: String = s"${timestamp.toDouble / 1000}s"
@@ -20,11 +24,11 @@ object ActionType extends Enumeration {
 
 object Attack {
   def apply(init: Opponent, target: Opponent, item: Weapon, timestamp: Int): Action = {
-    if(target.isEvaded(init)) {
+    if (target.isEvaded(init)) {
       Avoidance(init, target, item, timestamp, AvoidanceType.Evasion)
-    } else if(item.isPhysical && target.isParried) {
-      Avoidance(init,target, item, timestamp, AvoidanceType.Parry)
-    } else if(item.isPhysical && target.isBlocked) {
+    } else if (item.isPhysical && target.isParried) {
+      Avoidance(init, target, item, timestamp, AvoidanceType.Parry)
+    } else if (item.isPhysical && target.isBlocked) {
       Avoidance(init, target, item, timestamp, AvoidanceType.Block)
     } else {
       val weaponBaseDamage = item.getDamage
@@ -35,13 +39,11 @@ object Attack {
   }
 }
 
-case class DamageDeal(
-  init: Opponent,
-  target: Opponent,
-  item: Item,
-  timestamp: Int,
-  damage: Int,
-) extends Action {
+case class DamageDeal(init: Opponent,
+                      target: Opponent,
+                      item: Item,
+                      timestamp: Int,
+                      damage: Int) extends Action {
   override def _type: Type = ActionType.DamageDeal
 
   override def toString: String =
@@ -53,26 +55,22 @@ object AvoidanceType extends Enumeration {
   val Evasion, Parry, Block = Value
 }
 
-case class Avoidance(
-  init: Opponent,
-  target: Opponent,
-  item: Item,
-  timestamp: Int,
-  avoidanceType: AvoidanceType.Type,
-) extends Action {
+case class Avoidance(init: Opponent,
+                     target: Opponent,
+                     item: Item,
+                     timestamp: Int,
+                     avoidanceType: AvoidanceType.Type) extends Action {
   override def _type: Type = ActionType.Avoidance
 
   override def toString: String =
     s"${target.toString} performed an ${avoidanceType.toString} of attack from ${init.toString}, ${timestampStr}"
 }
 
-case class EffectApplication(
-  init: Opponent,
-  target: Opponent,
-  item: Item,
-  timestamp: Int,
-  effect: ActiveEffect,
-) extends Action {
+case class EffectApplication(init: Opponent,
+                             target: Opponent,
+                             item: Item,
+                             timestamp: Int,
+                             effect: ActiveEffect) extends Action {
   override def _type: Type = ActionType.EffectApplication
 
   override def toString: String = {
@@ -87,13 +85,11 @@ case class EffectApplication(
   }
 }
 
-case class EffectEnd(
-  init: Opponent,
-  target: Opponent,
-  item: Item,
-  timestamp: Int,
-  effect: ActiveEffect,
-) extends Action {
+case class EffectEnd(init: Opponent,
+                     target: Opponent,
+                     item: Item,
+                     timestamp: Int,
+                     effect: ActiveEffect) extends Action {
   override def _type: Type = ActionType.EffectEnd
 
   override def toString: String =

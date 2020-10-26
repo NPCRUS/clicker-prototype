@@ -18,6 +18,7 @@ trait MyPostgresProfile extends PostgresProfile
 
   ///
   trait API extends super.API with JsonImplicits {
+
     import game.JsonSupport._
 
     implicit val activeEffectsTypeMapper: JdbcType[List[ActiveEffect]] with BaseTypedType[List[ActiveEffect]] =
@@ -26,6 +27,7 @@ trait MyPostgresProfile extends PostgresProfile
     implicit val passiveEffectsTypeMapper: JdbcType[List[PassiveEffect]] with BaseTypedType[List[PassiveEffect]] =
       MappedJdbcType.base[List[PassiveEffect], JsValue](_.toJson, _.convertTo[List[PassiveEffect]])
   }
+
 }
 
 object MyPostgresProfile extends MyPostgresProfile

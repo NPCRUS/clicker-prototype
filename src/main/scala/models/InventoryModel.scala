@@ -28,41 +28,52 @@ object InventoryModel extends TableQuery(new Inventory(_)) {
 }
 
 class Inventory(tag: Tag) extends Table[DbItem](tag, "inventory") {
-  def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
-  def name = column[String]("name")
-  def cd = column[Int]("cd")
-  def _type = column[String]("_type")
-  def passiveEffects = column[List[PassiveEffect]]("passive_effects")
-  def activeEffects = column[List[ActiveEffect]]("active_effects")
-  def userId = column[Int]("user_id")
-  def armor = column[Int]("armor")
-  def armorType = column[String]("armor_type")
-  def weaponType = column[String]("weapon_type")
-  def baseDamage = column[Int]("base_damage")
-  def twoHanded = column[Boolean]("two_handed")
-  def damageType = column[String]("damage_type")
-  def rarity = column[String]("rarity")
-
   def * : ProvenShape[DbItem] =
     (id, name, cd, _type, passiveEffects, activeEffects, userId, armor.?, armorType.?, weaponType.?, baseDamage.?, twoHanded.?, damageType.?, rarity)
       .mapTo[DbItem]
 
-  def user = foreignKey("inventory_fk", userId, UserModel)(_.id, onUpdate=ForeignKeyAction.Cascade, onDelete=ForeignKeyAction.Cascade)
+  def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
+
+  def name = column[String]("name")
+
+  def cd = column[Int]("cd")
+
+  def _type = column[String]("_type")
+
+  def passiveEffects = column[List[PassiveEffect]]("passive_effects")
+
+  def activeEffects = column[List[ActiveEffect]]("active_effects")
+
+  def armor = column[Int]("armor")
+
+  def armorType = column[String]("armor_type")
+
+  def weaponType = column[String]("weapon_type")
+
+  def baseDamage = column[Int]("base_damage")
+
+  def twoHanded = column[Boolean]("two_handed")
+
+  def damageType = column[String]("damage_type")
+
+  def rarity = column[String]("rarity")
+
+  def user = foreignKey("inventory_fk", userId, UserModel)(_.id, onUpdate = ForeignKeyAction.Cascade, onDelete = ForeignKeyAction.Cascade)
+
+  def userId = column[Int]("user_id")
 }
 
-case class DbItem(
-  id: Int,
-  name: String,
-  cd: Int,
-  _type: String,
-  passiveEffects: List[PassiveEffect],
-  activeEffects: List[ActiveEffect],
-  user_id: Int,
-  armor: Option[Int],
-  armorType: Option[String],
-  weaponType: Option[String],
-  baseDamage: Option[Int],
-  twoHanded: Option[Boolean],
-  damageType: Option[String],
-  rarity: String
-)
+case class DbItem(id: Int,
+                  name: String,
+                  cd: Int,
+                  _type: String,
+                  passiveEffects: List[PassiveEffect],
+                  activeEffects: List[ActiveEffect],
+                  user_id: Int,
+                  armor: Option[Int],
+                  armorType: Option[String],
+                  weaponType: Option[String],
+                  baseDamage: Option[Int],
+                  twoHanded: Option[Boolean],
+                  damageType: Option[String],
+                  rarity: String)

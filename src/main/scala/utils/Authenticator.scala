@@ -15,6 +15,20 @@ import scala.util.{Failure, Success}
 
 class Authenticator extends AppConfig {
 
+  val jwtAuth: AuthenticationDirective[Token] = authenticateOAuth2[Token]("ext", jwtAuthenticator)
+  val jwtAuthWithUser: AuthenticationDirective[User] = authenticateOAuth2Async("ext", jwtWithUserAuthenticator)
+
+  private def jwtWithUserAuthenticator(credentials: Credentials): Future[Option[User]] = {
+    jwtAuthenticator(credentials) match {
+      case Some(token) =>
+        db.run(UserModel.getUserByUserId(token.user_id.toInt)).flatMap {
+          case Some(u) => Future(Some(u))
+          case None => Transactions.createUser(token).map(Some(_))
+        }
+      case None => Future.successful(None)
+    }
+  }
+
   private def jwtAuthenticator(credentials: Credentials): Option[Token] =
     credentials match {
       case Credentials.Provided(jwt) =>
@@ -35,19 +49,4 @@ class Authenticator extends AppConfig {
         }
       case Credentials.Missing => None
     }
-
-  val jwtAuth: AuthenticationDirective[Token] = authenticateOAuth2[Token]("ext", jwtAuthenticator)
-
-  private def jwtWithUserAuthenticator(credentials: Credentials): Future[Option[User]] = {
-    jwtAuthenticator(credentials) match {
-      case Some(token) =>
-        db.run(UserModel.getUserByUserId(token.user_id.toInt)).flatMap { //
-          case Some(u) => Future(Some(u))
-          case None => Transactions.createUser(token).map(Some(_))
-        }
-      case None => Future.successful(None)
-    }
-  }
-
-  val jwtAuthWithUser: AuthenticationDirective[User] = authenticateOAuth2Async("ext", jwtWithUserAuthenticator)
 }

@@ -225,24 +225,18 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
 
   implicit val helmetProtocol: RootJsonFormat[Helmet] = new ArmorTypedProtocol[Helmet](Helmet.apply)
   implicit val bodyProtocol: RootJsonFormat[Body] = new ArmorTypedProtocol[Body](Body.apply)
-  implicit val glovesProtocol: RootJsonFormat[Gloves] = new ArmorTypedProtocol[Gloves](Gloves.apply)
-  implicit val bootsProtocol: RootJsonFormat[Boots] = new ArmorTypedProtocol[Boots](Boots.apply)
-  implicit val beltProtocol: RootJsonFormat[Belt] = new ArmorTypedProtocol[Belt](Belt.apply)
+  implicit val greavesProtocol: RootJsonFormat[Greaves] = new ArmorTypedProtocol[Greaves](Greaves.apply)
   implicit val amuletProtocol: RootJsonFormat[Amulet] = new ArmorTypedProtocol[Amulet](Amulet.apply)
-  implicit val ringProtocol: RootJsonFormat[Ring] = new ArmorTypedProtocol[Ring](Ring.apply)
   implicit val shieldProtocol: RootJsonFormat[Shield] = new ArmorTypedProtocol[Shield](Shield.apply)
-  implicit val armorSetProtocol: RootJsonFormat[ArmorSet] = jsonFormat8(ArmorSet.apply)
+  implicit val armorSetProtocol: RootJsonFormat[ArmorSet] = jsonFormat4(ArmorSet.apply)
 
   implicit object ArmorFormat extends RootJsonFormat[Armor] {
     override def write(obj: Armor): JsValue =
       JsObject((obj match {
         case h: Helmet => h.toJson
         case b: Body => b.toJson
-        case g: Gloves => g.toJson
-        case boo: Boots => boo.toJson
-        case b: Belt => b.toJson
+        case boo: Greaves => boo.toJson
         case a: Amulet => a.toJson
-        case r: Ring => r.toJson
         case s: Shield => s.toJson
         case unknown => deserializationError(s"json deserialize error: $unknown")
       }).asJsObject.fields)
@@ -256,11 +250,8 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
       armorType match {
         case ArmorType.Helmet => json.convertTo[Helmet]
         case ArmorType.Body => json.convertTo[Body]
-        case ArmorType.Gloves => json.convertTo[Gloves]
-        case ArmorType.Boots => json.convertTo[Boots]
-        case ArmorType.Belt => json.convertTo[Belt]
+        case ArmorType.Greaves => json.convertTo[Greaves]
         case ArmorType.Amulet => json.convertTo[Amulet]
-        case ArmorType.Ring => json.convertTo[Ring]
         case ArmorType.Shield => json.convertTo[Shield]
       }
     }

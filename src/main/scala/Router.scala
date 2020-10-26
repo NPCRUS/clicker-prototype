@@ -13,24 +13,13 @@ object Router {
 
   val handleErrors: Directive0 = handleRejections(corsRejectionHandler.withFallback(RejectionHandler.default)) &
     handleExceptions(exceptionHandler)
-
-  def middlewares(r: Route): Route = {
-    cors() {
-      handleErrors {
-        r
-      }
-    }
-  }
+  // controllers
+  val meController = new MeController
 
   // services
   implicit val authenticator: Authenticator = new Authenticator
-
-
-  // controllers
-  val meController = new MeController
   val inventoryController = new InventoryController
   val battleController = new BattleController
-
   // routes
   val healthRoute = new HealthRoute
   val meRoute = new MeRoute(meController)
@@ -54,6 +43,14 @@ object Router {
       // battle routes
       path("battle")(battleRoute.battle)
     )
+  }
+
+  def middlewares(r: Route): Route = {
+    cors() {
+      handleErrors {
+        r
+      }
+    }
   }
 }
 

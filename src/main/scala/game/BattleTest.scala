@@ -31,7 +31,7 @@ object BattleTest extends App {
   )
   val handle2 = TwoHandedHandle(pitchfork)
   val body = Body("best", 10000, 100, Rarity.Mediocre, List.empty)
-  val armorSet = ArmorSet(None, Some(body), None, None, None, None, None, None)
+  val armorSet = ArmorSet.empty.copy(body = Some(body))
   val pawn2 = Pawn("John", handle2, armorSet, InitialProperties(100))
 
   val battle = new Battle(pawn1, pawn2)

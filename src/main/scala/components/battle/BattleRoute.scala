@@ -3,11 +3,11 @@ package components.battle
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import models.BattlePost
+import models.JsonSupport._
 import utils.Authenticator
 
-import models.JsonSupport._
-
 class BattleRoute(controller: BattleController)(implicit auth: Authenticator) {
+
   import game.JsonSupport._
 
   def battle: Route = auth.jwtAuthWithUser { user =>
