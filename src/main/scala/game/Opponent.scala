@@ -78,38 +78,11 @@ case class Opponent(pawn: Pawn,
   def armor: Int =
     pawn.armor + getEffectChangeByType(EffectTargetType.Armor)
 
-  def armorMitigation: Double =
-    statsConvert(pawn.armorMitigation + getEffectChangeByType(EffectTargetType.ArmorMit))
+  def armorMitigation: Double = ???
 
-  private def calculateMagicalDamage(attacker: Opponent, damageType: DamageType.Type, damage: Int): Int = {
-    val (magicalResist, magicalMitigation) = damageType match {
-      case DamageType.Cold => (coldResistance, attacker.coldMitigation)
-      case DamageType.Fire => (fireResistance, attacker.fireMitigation)
-      case DamageType.Lightning => (lightningResistance, attacker.lightningMitigation)
-    }
+  private def calculateMagicalDamage(attacker: Opponent, damageType: DamageType.Type, damage: Int): Int = ???
 
-    val resist = (magicalResist - magicalMitigation)
-    if (resist <= 0) damage
-    else (damage - damage * resist).round.toInt
-  }
-
-  def coldResistance: Double =
-    statsConvert(pawn.coldResistance + getEffectChangeByType(EffectTargetType.ColdRes))
-
-  def fireResistance: Double =
-    statsConvert(pawn.fireResistance + getEffectChangeByType(EffectTargetType.FireRes))
-
-  def lightningResistance: Double =
-    statsConvert(pawn.lightningResistance + getEffectChangeByType(EffectTargetType.LightningRes))
-
-  def coldMitigation: Double =
-    statsConvert(pawn.coldMitigation + getEffectChangeByType(EffectTargetType.ColdMit))
-
-  def fireMitigation: Double =
-    statsConvert(pawn.fireMitigation + getEffectChangeByType(EffectTargetType.FireMit))
-
-  def lightningMitigation: Double =
-    statsConvert(pawn.lightningMitigation + getEffectChangeByType(EffectTargetType.LightningMit))
+  // mitigation + mastery technique
 
   override def toString: String = s"${pawn.name}(${hp}hp)"
 }
