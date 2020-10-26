@@ -292,8 +292,9 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   }
   implicit val swordProtocol: RootJsonFormat[Sword] = new WeaponTypedProtocol[Sword](Sword.apply)
   implicit val polearmProtocol: RootJsonFormat[Polearm] = new WeaponTypedProtocol[Polearm](Polearm.apply)
+  implicit val axeProtocol: RootJsonFormat[Axe] = new WeaponTypedProtocol[Axe](Axe.apply)
   implicit object daggerProtocol extends WeaponTypedProtocol[Dagger](
-    (str, int1, int2, bool, damageType, rarity, pe, ae) => items.Dagger(str, int1, int2, damageType, rarity, pe, ae)
+    (str, int1, int2, _, damageType, rarity, pe, ae) => items.Dagger(str, int1, int2, damageType, rarity, pe, ae)
   ) {
     override def read(json: JsValue): Dagger = {
       val fields = json.asJsObject.fields
@@ -315,6 +316,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
         case s: Sword => s.toJson
         case d: Dagger => d.toJson
         case p: Polearm => p.toJson
+        case a: Axe => a.toJson
         case unknown => deserializationError(s"json deserialize error: $unknown")
       }).asJsObject.fields)
 
@@ -329,6 +331,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
         case WeaponType.Sword => json.convertTo[Sword]
         case WeaponType.Dagger => json.convertTo[Dagger]
         case WeaponType.Polearm => json.convertTo[Polearm]
+        case WeaponType.Axe => json.convertTo[Axe]
       }
     }
   }

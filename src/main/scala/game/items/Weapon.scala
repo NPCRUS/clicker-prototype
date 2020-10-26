@@ -71,3 +71,14 @@ case class Polearm(name: String,
                    activeEffects: List[ActiveEffect] = List.empty) extends Weapon {
   override def weaponType: WeaponType.Type = WeaponType.Polearm
 }
+
+case class Axe(name: String,
+               cd: Int,
+               baseDamage: Int,
+               twoHanded: Boolean,
+               damageType: DamageType.Type = DamageType.Physical,
+               rarity: Rarity.Type = Rarity.Mediocre,
+               passiveEffects: List[PassiveEffect] = List.empty,
+               activeEffects: List[ActiveEffect] = List.empty) extends Weapon {
+  override def weaponType: WeaponType.Type = WeaponType.Axe
+}

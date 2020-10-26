@@ -131,6 +131,13 @@ class JsonSupportSpec extends AnyWordSpecLike with Matchers {
       val obj = json.parseJson.convertTo[Weapon]
       obj shouldBe polearm
     }
+
+    "axe should serialize and deserialize" in {
+      val axe = Axe("test", 1000, 20, twoHanded = false)
+      val json = axe.toJson.toString
+      val obj = json.parseJson.convertTo[Weapon]
+      obj shouldBe axe
+    }
   }
 
   "Item:" should {
