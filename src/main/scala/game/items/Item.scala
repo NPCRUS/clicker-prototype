@@ -30,7 +30,7 @@ object Rarity extends Enumeration {
 
 object EffectTargetType extends Enumeration {
   type Type = Value
-  val Hp, Armor, Parry, Evasion, Block, PhysicMit, MagicMit, PhysicMastery, MagicMastery, CritChance, CritMultiplier, Accuracy = Value
+  val Hp, Armor, Parry, Evasion, Block, MagicResistance, PhysicMastery, MagicMastery, CritChance, CritMultiplier, Accuracy = Value
 }
 
 case class PassiveEffect(target: EffectTargetType.Type,

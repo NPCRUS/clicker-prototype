@@ -6,8 +6,7 @@ case class InitialProperties(hp: Int = 100,
                              parryRate: Int = 0,
                              evasionRate: Int = 0,
                              blockRate: Int = 0,
-                             physicalMitigation: Int = 0,
-                             magicMitigation: Int = 0,
+                             magicalResistance: Int = 0,
                              physicalMastery: Int = 0,
                              magicalMastery: Int = 0,
                              criticalChance: Int = 0,
@@ -38,10 +37,8 @@ case class Pawn(name: String,
     getEffectChangeByType(EffectTargetType.Evasion) + initProperties.evasionRate
   lazy val blockRate: Int =
     getEffectChangeByType(EffectTargetType.Block) + initProperties.blockRate
-  lazy val physicalMitigation: Int =
-    getEffectChangeByType(EffectTargetType.PhysicMit) + initProperties.physicalMitigation
-  lazy val magicalMitigation: Int =
-    getEffectChangeByType(EffectTargetType.MagicMit) + initProperties.magicMitigation
+  lazy val magicalResistance: Int =
+    getEffectChangeByType(EffectTargetType.MagicResistance) + initProperties.magicalResistance
   lazy val physicalMastery: Int =
     getEffectChangeByType(EffectTargetType.PhysicMastery) + initProperties.physicalMastery
   lazy val magicalMastery: Int =

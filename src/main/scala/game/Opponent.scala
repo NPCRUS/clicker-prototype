@@ -1,8 +1,7 @@
 package game
 
-import game.items.{ActiveEffect, DamageType, EffectTargetType, Weapon}
-
-import scala.util.Random
+import game.items._
+import AttributesEffects._
 
 object Opponent {
   def fromPawn(pawn: Pawn): Opponent = new Opponent(pawn, pawn.hp, List.empty)
@@ -11,9 +10,12 @@ object Opponent {
 case class Opponent(pawn: Pawn,
                     hp: Int,
                     activeEffects: List[ActiveEffect]) {
-  def calculateDamage(item: Weapon, baseDamage: Int): Int = {
-    // logic for crits and any other sort of multipliers
-    baseDamage
+
+  // calculate output damage
+  def calculateDamage(item: Weapon): Int = {
+    val damage = masteryPhysical(item.getDamage, physicalMasteryRate)
+    isCriticalDamage(damage, criticalChance, criticalMultiplier)
+      .fold(damage)(v => v)
   }
 
   def removeActiveEffect(a: ActiveEffect): Opponent =
@@ -32,57 +34,61 @@ case class Opponent(pawn: Pawn,
     else Opponent(pawn, pawn.hp, activeEffects)
   }
 
-  def isEvaded(attacker: Opponent): Boolean =
-    (nextRand - (evasionRate - attacker.accuracyRating)) < 0
-
-  def evasionRate: Double =
-    statsConvert(pawn.evasionRate + getEffectChangeByType(EffectTargetType.Evasion))
-
-  def accuracyRating: Double =
-    statsConvert(pawn.accuracyRating + getEffectChangeByType(EffectTargetType.Accuracy))
-
-  def isParried: Boolean = (nextRand - parryRate) < 0
-
-  def parryRate: Double =
-    statsConvert(pawn.parryRate + getEffectChangeByType(EffectTargetType.Parry))
-
-  def isBlocked: Boolean =
-    pawn.handle.getShield.isDefined && ((nextRand - blockRate) < 0)
-
-  private def nextRand: Double = Random.between(0, 100).toDouble * 0.01
-
-  def blockRate: Double =
-    statsConvert(pawn.blockRate + getEffectChangeByType(EffectTargetType.Block))
-
-  private def getEffectChangeByType(targetT: EffectTargetType.Type) =
-    activeEffects.filter(_.target == targetT).map(_.change).sum
-
-  private def statsConvert(inputInt: Int): Double = inputInt.toDouble * 0.0001
-
   def dealDamage(attacker: Opponent, damageType: DamageType.Type, damage: Int): (Int, Opponent) = {
     val actualDamage = damageType match {
       case DamageType.Physical => calculatePhysicalDamage(attacker, damage)
-      case _ => calculateMagicalDamage(attacker, damageType, damage)
+      case DamageType.Magical => calculateMagicalDamage(attacker, damage)
     }
 
     (actualDamage, Opponent(pawn, hp - actualDamage, activeEffects))
   }
 
-  private def calculatePhysicalDamage(attacker: Opponent, damage: Int): Int = {
-    val effectiveArmor = armor.toDouble * (1 - attacker.armorMitigation)
-    val armorMitigation = effectiveArmor.toDouble / (effectiveArmor + 10 * damage)
+  private def calculatePhysicalDamage(attacker: Opponent, damage: Int): Int =
+    armorMitigation(damage, armor)
 
-    (damage * (1 - armorMitigation)).round.toInt
-  }
+  private def calculateMagicalDamage(attacker: Opponent, damage: Int): Int =
+    resistMagic(damage, magicalResistanceRate)
+
+  def isEvaded(attacker: Opponent): Boolean =
+    AttributesEffects.isEvaded(evasionRate, attacker.accuracyRate)
+
+  def isParried: Boolean =
+    // if weapon allow
+    AttributesEffects.isParried(parryRate)
+
+  def isBlocked: Boolean =
+    // if weapon allow
+    AttributesEffects.isBlocked(blockRate)
 
   def armor: Int =
     pawn.armor + getEffectChangeByType(EffectTargetType.Armor)
 
-  def armorMitigation: Double = ???
+  def evasionRate: Int =
+    pawn.evasionRate + getEffectChangeByType(EffectTargetType.Evasion)
 
-  private def calculateMagicalDamage(attacker: Opponent, damageType: DamageType.Type, damage: Int): Int = ???
+  def parryRate: Int =
+    pawn.parryRate + getEffectChangeByType(EffectTargetType.Parry)
 
-  // mitigation + mastery technique
+  def blockRate: Int =
+    pawn.blockRate + getEffectChangeByType(EffectTargetType.Block)
+
+  def magicalResistanceRate: Int =
+    pawn.magicalResistance + getEffectChangeByType(EffectTargetType.MagicResistance)
+
+  def physicalMasteryRate: Int =
+    pawn.physicalMastery + getEffectChangeByType(EffectTargetType.PhysicMastery)
+
+  def criticalChance: Int =
+    pawn.criticalChance + getEffectChangeByType(EffectTargetType.CritChance)
+
+  def criticalMultiplier: Int =
+    pawn.criticalMultiplier + getEffectChangeByType(EffectTargetType.CritMultiplier)
+
+  def accuracyRate: Int =
+    pawn.accuracyRating + getEffectChangeByType(EffectTargetType.Accuracy)
+
+  private def getEffectChangeByType(targetT: EffectTargetType.Type) =
+    activeEffects.filter(_.target == targetT).map(_.change).sum
 
   override def toString: String = s"${pawn.name}(${hp}hp)"
 }

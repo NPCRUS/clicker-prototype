@@ -28,8 +28,7 @@ class PawnSpec
       PassiveEffect(EffectTargetType.Parry, 52),
       PassiveEffect(EffectTargetType.Evasion, 27),
       PassiveEffect(EffectTargetType.Block, 61),
-      PassiveEffect(EffectTargetType.PhysicMit, 23),
-      PassiveEffect(EffectTargetType.MagicMit, 48),
+      PassiveEffect(EffectTargetType.MagicResistance, 48),
       PassiveEffect(EffectTargetType.PhysicMastery, 94),
       PassiveEffect(EffectTargetType.MagicMastery, 29),
       PassiveEffect(EffectTargetType.CritChance, 33),
@@ -73,12 +72,8 @@ class PawnSpec
       pawn.blockRate shouldEqual initialProperties.blockRate + pawn.getEffectChangeByType(EffectTargetType.Block)
     }
 
-    "calculating physicalMitigation check" in {
-      pawn.physicalMitigation shouldEqual initialProperties.physicalMitigation + pawn.getEffectChangeByType(EffectTargetType.PhysicMit)
-    }
-
-    "calculating magicalMitigation check" in {
-      pawn.magicalMitigation shouldEqual initialProperties.magicMitigation + pawn.getEffectChangeByType(EffectTargetType.MagicMit)
+    "calculating magicalResistance check" in {
+      pawn.magicalResistance shouldEqual initialProperties.magicalResistance + pawn.getEffectChangeByType(EffectTargetType.MagicResistance)
     }
 
     "calculating physicalMastery check" in {

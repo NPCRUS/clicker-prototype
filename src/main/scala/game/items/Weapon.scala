@@ -35,7 +35,7 @@ object WeaponType extends Enumeration {
 
 object DamageType extends Enumeration {
   type Type = Value
-  val Physical, Fire, Cold, Lightning = Value
+  val Physical, Magical = Value
 }
 
 case class Sword(name: String,

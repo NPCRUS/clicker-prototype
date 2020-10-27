@@ -18,7 +18,7 @@ class JsonSupportSpec extends AnyWordSpecLike with Matchers {
   )
   val body: Body = Body("test", 1000, 30, Rarity.Mediocre, List(passiveEffect), List(activeEffect))
   val armorSet: ArmorSet = ArmorSet.empty.copy(body = Some(body))
-  val sword: Sword = Sword("test", 1000, 20, twoHanded = false, DamageType.Lightning)
+  val sword: Sword = Sword("test", 1000, 20, twoHanded = false, DamageType.Magical)
   val shield: Shield = Shield("test", 1, 2, Rarity.Mediocre, List(passiveEffect), List(activeEffect))
   val oneHandedHandle: OneHandedHandle = OneHandedHandle(sword, Some(shield))
   val pawn: Pawn = Pawn("name", oneHandedHandle, armorSet, InitialProperties())
@@ -149,7 +149,7 @@ class JsonSupportSpec extends AnyWordSpecLike with Matchers {
     }
 
     "weapon should serialize and deserialize into item" in {
-      val sword = Sword("test", 1000, 20, twoHanded = true, DamageType.Lightning)
+      val sword = Sword("test", 1000, 20, twoHanded = true, DamageType.Magical)
       val json = sword.toJson.toString
       val obj = json.parseJson.convertTo[Item]
       obj shouldBe sword
@@ -158,7 +158,7 @@ class JsonSupportSpec extends AnyWordSpecLike with Matchers {
 
   "Handle:" should {
     "dualHandle should serialize and deserialize" in {
-      val sword = Sword("test", 1000, 20, twoHanded = false, DamageType.Lightning)
+      val sword = Sword("test", 1000, 20, twoHanded = false, DamageType.Magical)
       val dagger = Dagger("test", 1000, 20)
       val dualHandle = DualHandle(sword, dagger)
       val json = dualHandle.toJson.toString
@@ -167,7 +167,7 @@ class JsonSupportSpec extends AnyWordSpecLike with Matchers {
     }
 
     "onaHandedHandle" in {
-      val sword = Sword("test", 1000, 20, twoHanded = false, DamageType.Lightning)
+      val sword = Sword("test", 1000, 20, twoHanded = false, DamageType.Magical)
       val shield = Shield("test", 1, 2, Rarity.Masterpiece, List(passiveEffect), List(activeEffect))
       val oneHandedHandle = OneHandedHandle(sword, Some(shield))
       val json = oneHandedHandle.toJson.toString
@@ -176,7 +176,7 @@ class JsonSupportSpec extends AnyWordSpecLike with Matchers {
     }
 
     "twoHandedHandle should serialize and deserialize" in {
-      val sword = Sword("test", 1000, 20, twoHanded = true, DamageType.Lightning)
+      val sword = Sword("test", 1000, 20, twoHanded = true, DamageType.Magical)
       val twoHandedHandle = TwoHandedHandle(sword)
       val json = twoHandedHandle.toJson.toString
       val obj = json.parseJson.convertTo[Handle]

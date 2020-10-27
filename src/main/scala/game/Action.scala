@@ -31,8 +31,7 @@ object Attack {
     } else if (item.isPhysical && target.isBlocked) {
       Avoidance(init, target, item, timestamp, AvoidanceType.Block)
     } else {
-      val weaponBaseDamage = item.getDamage
-      val initialInputDamage = init.calculateDamage(item, weaponBaseDamage)
+      val initialInputDamage = init.calculateDamage(item)
       val (finalDamage, newTarget) = target.dealDamage(init, item.damageType, initialInputDamage)
       DamageDeal(init, newTarget, item, timestamp, finalDamage)
     }

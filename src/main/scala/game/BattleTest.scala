@@ -9,7 +9,7 @@ object BattleTest extends App {
     20,
     DamageType.Physical,
     Rarity.Mediocre,
-    List(PassiveEffect(EffectTargetType.PhysicMit, 1000)),
+    List(PassiveEffect(EffectTargetType.PhysicMastery, 1000)),
     List(PeriodicActiveEffect(EffectTargetType.Hp, chance = 1.0, change = 10, self = true, 4, 2000)))
   val sword = Sword(
     "sword",
@@ -27,7 +27,7 @@ object BattleTest extends App {
     twoHanded = true,
     DamageType.Physical,
     Rarity.Mediocre,
-    List(PassiveEffect(EffectTargetType.PhysicMit, 1000))
+    List(PassiveEffect(EffectTargetType.PhysicMastery, 1000))
   )
   val handle2 = TwoHandedHandle(pitchfork)
   val body = Body("best", 10000, 100, Rarity.Mediocre, List.empty)
