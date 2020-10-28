@@ -1,101 +1,41 @@
 package game
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import game.ActionType.Type
 import game.items._
 import spray.json._
 
 object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
 
-  implicit object ItemTypeFormat extends RootJsonFormat[ItemType.Type] {
-    override def write(obj: ItemType.Type): JsValue = JsString(obj.toString)
+  class EnumJsonConverter[T <: scala.Enumeration](enu: T) extends RootJsonFormat[T#Value] {
+    override def write(obj: T#Value): JsValue = JsString(obj.toString)
 
-    override def read(json: JsValue): ItemType.Type = json match {
-      case JsString(str) => ItemType.withName(str)
-      case unknown => deserializationError(s"json deserialize error: $unknown")
+    override def read(json: JsValue): T#Value = {
+      json match {
+        case JsString(txt) => enu.withName(txt)
+        case somethingElse => throw DeserializationException(s"Expected a value from enum $enu instead of $somethingElse")
+      }
     }
   }
 
-  implicit object RarityFormat extends RootJsonFormat[Rarity.Type] {
-    override def write(obj: Rarity.Type): JsValue = JsString(obj.toString)
+  implicit val itemTypeProtocol: EnumJsonConverter[ItemType.type] = new EnumJsonConverter(ItemType)
 
-    override def read(json: JsValue): Rarity.Type = json match {
-      case JsString(str) => Rarity.withName(str)
-      case unknown => deserializationError(s"json deserialize error: $unknown")
-    }
-  }
+  implicit val rarityProtocol: EnumJsonConverter[Rarity.type] = new EnumJsonConverter(Rarity)
 
-  implicit object ArmorTypeFormat extends RootJsonFormat[ArmorType.Type] {
-    override def write(obj: ArmorType.Type): JsValue = JsString(obj.toString)
+  implicit val armorTypeProtocol: EnumJsonConverter[ArmorType.type] = new EnumJsonConverter(ArmorType)
 
-    override def read(json: JsValue): ArmorType.Type = json match {
-      case JsString(str) => ArmorType.withName(str)
-      case unknown => deserializationError(s"json deserialize error: $unknown")
-    }
-  }
+  implicit val weaponTypeProtocol: EnumJsonConverter[WeaponType.type] = new EnumJsonConverter(WeaponType)
 
-  implicit object WeaponTypeFormat extends RootJsonFormat[WeaponType.Type] {
-    override def write(obj: WeaponType.Type): JsValue = JsString(obj.toString)
+  implicit val handleTypeProtocol: EnumJsonConverter[HandleType.type] = new EnumJsonConverter(HandleType)
 
-    override def read(json: JsValue): WeaponType.Type = json match {
-      case JsString(str) => WeaponType.withName(str)
-      case unknown => deserializationError(s"json deserialize error: $unknown")
-    }
-  }
+  implicit val effectTargetTypeProtocol: EnumJsonConverter[EffectTargetType.type] = new EnumJsonConverter(EffectTargetType)
 
-  implicit object HandleTypeFormat extends RootJsonFormat[HandleType.Type] {
-    override def write(obj: HandleType.Type): JsValue = JsString(obj.toString)
+  implicit val avoidanceTypeProtocol: EnumJsonConverter[AvoidanceType.type] = new EnumJsonConverter(AvoidanceType)
 
-    override def read(json: JsValue): HandleType.Type = json match {
-      case JsString(str) => HandleType.withName(str)
-      case unknown => deserializationError(s"json deserialize error: $unknown")
-    }
-  }
+  implicit val damageTypeProtocol: EnumJsonConverter[DamageType.type] = new EnumJsonConverter(DamageType)
 
-  implicit object PassiveEffectTypeFormat extends RootJsonFormat[EffectTargetType.Type] {
-    override def write(obj: EffectTargetType.Type): JsValue = JsString(obj.toString)
+  implicit val activeEffectTypeProtocol: EnumJsonConverter[ActiveEffectType.type] = new EnumJsonConverter(ActiveEffectType)
 
-    override def read(json: JsValue): EffectTargetType.Type = json match {
-      case JsString(str) => EffectTargetType.withName(str)
-      case unknown => deserializationError(s"json deserialize error: $unknown")
-    }
-  }
-
-  implicit object AvoidanceTypeFormat extends RootJsonFormat[AvoidanceType.Type] {
-    override def write(obj: AvoidanceType.Type): JsValue = JsString(obj.toString)
-
-    override def read(json: JsValue): AvoidanceType.Type = json match {
-      case JsString(str) => AvoidanceType.withName(str)
-      case unknown => deserializationError(s"json deserialize error: $unknown")
-    }
-  }
-
-  implicit object DamageTypeFormat extends RootJsonFormat[DamageType.Type] {
-    override def write(obj: DamageType.Type): JsValue = JsString(obj.toString)
-
-    override def read(json: JsValue): DamageType.Type = json match {
-      case JsString(str) => DamageType.withName(str)
-      case unknown => deserializationError(s"json deserialize error: $unknown")
-    }
-  }
-
-  implicit object ActiveEffectTypeFormat extends RootJsonFormat[ActiveEffectType.Type] {
-    override def write(obj: ActiveEffectType.Type): JsValue = JsString(obj.toString)
-
-    override def read(json: JsValue): ActiveEffectType.Type = json match {
-      case JsString(str) => ActiveEffectType.withName(str)
-      case unknown => deserializationError(s"json deserialize error: $unknown")
-    }
-  }
-
-  implicit object ActionTypeFormat extends RootJsonFormat[ActionType.Type] {
-    override def write(obj: Type): JsValue = JsString(obj.toString)
-
-    override def read(json: JsValue): Type = json match {
-      case JsString(str) => ActionType.withName(str)
-      case unknown => deserializationError(s"json deserialize error: $unknown")
-    }
-  }
+  implicit val actionTypeProtocol: EnumJsonConverter[ActionType.type] = new EnumJsonConverter(ActionType)
 
   // EFFECTS
   implicit val passiveEffectProtocol: RootJsonFormat[PassiveEffect] = jsonFormat2(PassiveEffect)
