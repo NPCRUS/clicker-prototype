@@ -7,14 +7,14 @@ import org.scalatest.wordspec.AnyWordSpecLike
 import utils.AppExceptions._
 
 class GetCharacterWithNewItemSpec extends AnyWordSpecLike with Matchers {
-  val helmet: Helmet = Helmet("helmet", 1, 1)
-  val body: Body = Body("body", 1, 1)
-  val greaves: Greaves = Greaves("boots", 1, 1)
-  val amulet: Amulet = Amulet("amulet", 1, 1)
+  val helmet: Helmet = Helmet("helmet", 1, 1, ArmorType.Heavy)
+  val body: Body = Body("body", 1, 1, ArmorType.Heavy)
+  val greaves: Greaves = Greaves("boots", 1, 1, ArmorType.Heavy)
+  val amulet: Amulet = Amulet("amulet", 1, 1, ArmorType.Heavy)
   val oneHanded: Sword = Sword("sword", 1, 1, twoHanded = false)
   val otherOneHanded: Dagger = Dagger("dagger", 1, 1)
   val twoHanded: Sword = Sword("sword", 1, 1, twoHanded = true)
-  val shield: Shield = Shield("shield", 1, 1)
+  val shield: Shield = Shield("shield", 1, 1, ArmorType.Heavy)
   val emptyCharacter: DbCharacter = DbCharacter(0, 0, None, None, None, None, None, None)
 
   val controller = new InventoryController
@@ -182,6 +182,7 @@ class GetCharacterWithNewItemSpec extends AnyWordSpecLike with Matchers {
           a.activeEffects,
           0,
           Some(a.armor),
+          Some(a.armorPart.toString),
           Some(a.armorType.toString),
           None,
           None,
@@ -198,6 +199,7 @@ class GetCharacterWithNewItemSpec extends AnyWordSpecLike with Matchers {
           w.passiveEffects,
           w.activeEffects,
           0,
+          None,
           None,
           None,
           Some(w.weaponType.toString),

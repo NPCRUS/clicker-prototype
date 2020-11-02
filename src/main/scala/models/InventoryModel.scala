@@ -29,7 +29,7 @@ object InventoryModel extends TableQuery(new Inventory(_)) {
 
 class Inventory(tag: Tag) extends Table[DbItem](tag, "inventory") {
   def * : ProvenShape[DbItem] =
-    (id, name, cd, _type, passiveEffects, activeEffects, userId, armor.?, armorType.?, weaponType.?, baseDamage.?, twoHanded.?, damageType.?, rarity)
+    (id, name, cd, _type, passiveEffects, activeEffects, userId, armor.?, armorPart.?,armorType.?, weaponType.?, baseDamage.?, twoHanded.?, damageType.?, rarity)
       .mapTo[DbItem]
 
   def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
@@ -45,6 +45,8 @@ class Inventory(tag: Tag) extends Table[DbItem](tag, "inventory") {
   def activeEffects = column[List[ActiveEffect]]("active_effects")
 
   def armor = column[Int]("armor")
+
+  def armorPart = column[String]("armor_part")
 
   def armorType = column[String]("armor_type")
 
@@ -71,6 +73,7 @@ case class DbItem(id: Int,
                   activeEffects: List[ActiveEffect],
                   user_id: Int,
                   armor: Option[Int],
+                  armorPart: Option[String],
                   armorType: Option[String],
                   weaponType: Option[String],
                   baseDamage: Option[Int],

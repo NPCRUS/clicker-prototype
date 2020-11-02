@@ -30,7 +30,7 @@ trait Weapon extends Item {
 
 object WeaponType extends Enumeration {
   type Type = Value
-  val Scepter, Mace, Axe, Sword, Bow, Dagger, Staff, Wand, Polearm = Value
+  val Axe, Sword, Dagger, Polearm = Value
 }
 
 object DamageType extends Enumeration {

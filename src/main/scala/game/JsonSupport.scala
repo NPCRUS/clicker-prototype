@@ -21,6 +21,8 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
 
   implicit val rarityProtocol: EnumJsonConverter[Rarity.type] = new EnumJsonConverter(Rarity)
 
+  implicit val armorPartProtocol: EnumJsonConverter[ArmorPart.type] = new EnumJsonConverter(ArmorPart)
+
   implicit val armorTypeProtocol: EnumJsonConverter[ArmorType.type] = new EnumJsonConverter(ArmorType)
 
   implicit val weaponTypeProtocol: EnumJsonConverter[WeaponType.type] = new EnumJsonConverter(WeaponType)
@@ -135,15 +137,16 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
 
   // ARMOR
   class ArmorTypedProtocol[T <: Armor](
-    factory: (String, Int, Int, Rarity.Type, List[PassiveEffect], List[ActiveEffect]) => T
+    factory: (String, Int, Int, ArmorType.Type, Rarity.Type, List[PassiveEffect], List[ActiveEffect]) => T
   ) extends RootJsonFormat[T] {
     override def write(obj: T): JsValue = {
       JsObject(
         "name" -> JsString(obj.name),
         "cd" -> JsNumber(obj.cd),
         "armor" -> JsNumber(obj.armor),
-        "rarity" -> obj.rarity.toJson,
         "armorType" -> obj.armorType.toJson,
+        "rarity" -> obj.rarity.toJson,
+        "armorPart" -> obj.armorPart.toJson,
         "_type" -> obj._type.toJson,
         "passiveEffects" -> obj.passiveEffects.toJson,
         "activeEffects" -> obj.activeEffects.toJson
@@ -156,6 +159,7 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
         fields("name").convertTo[String],
         fields("cd").convertTo[Int],
         fields("armor").convertTo[Int],
+        fields("armorType").convertTo[ArmorType.Type],
         fields("rarity").convertTo[Rarity.Type],
         fields("passiveEffects").convertTo[List[PassiveEffect]],
         fields("activeEffects").convertTo[List[ActiveEffect]]
@@ -175,24 +179,24 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
       JsObject((obj match {
         case h: Helmet => h.toJson
         case b: Body => b.toJson
-        case boo: Greaves => boo.toJson
+        case g: Greaves => g.toJson
         case a: Amulet => a.toJson
         case s: Shield => s.toJson
         case unknown => deserializationError(s"json deserialize error: $unknown")
       }).asJsObject.fields)
 
     override def read(json: JsValue): Armor = {
-      val armorType = json.asJsObject.getFields("armorType") match {
-        case Seq(JsString(m)) => ArmorType.withName(m)
+      val armorType = json.asJsObject.getFields("armorPart") match {
+        case Seq(JsString(m)) => ArmorPart.withName(m)
         case unknown => deserializationError(s"json deserialize error: $unknown")
       }
 
       armorType match {
-        case ArmorType.Helmet => json.convertTo[Helmet]
-        case ArmorType.Body => json.convertTo[Body]
-        case ArmorType.Greaves => json.convertTo[Greaves]
-        case ArmorType.Amulet => json.convertTo[Amulet]
-        case ArmorType.Shield => json.convertTo[Shield]
+        case ArmorPart.Helmet => json.convertTo[Helmet]
+        case ArmorPart.Body => json.convertTo[Body]
+        case ArmorPart.Greaves => json.convertTo[Greaves]
+        case ArmorPart.Amulet => json.convertTo[Amulet]
+        case ArmorPart.Shield => json.convertTo[Shield]
       }
     }
   }

@@ -49,7 +49,7 @@ class InventoryController
             .equipWeapon(Some(item.id), equipmentPart)
         else
           character.equipWeapon(Some(item.id), equipmentPart)
-      case a: Armor if a.armorType.toString == equipmentPart.toString =>
+      case a: Armor if a.armorPart.toString == equipmentPart.toString =>
         character.equipArmor(Some(item.id), equipmentPart)
       case _ => throw new AppExceptions.EquipPartAndItemNotCompatible
     }
@@ -69,10 +69,10 @@ class InventoryController
 
   def createItem(user: User, item: Item): Future[DbItem] = {
     def armorToDbItem(a: Armor, u: User): DbItem =
-      DbItem(0, a.name, a.cd, a._type.toString, a.passiveEffects, a.activeEffects, u.id, Some(a.armor), Some(a.armorType.toString), None, None, None, None, a.rarity.toString)
+      DbItem(0, a.name, a.cd, a._type.toString, a.passiveEffects, a.activeEffects, u.id, Some(a.armor), Some(a.armorPart.toString), Some(a.armorType.toString), None, None, None, None, a.rarity.toString)
 
     def weaponToDbItem(w: Weapon, u: User): DbItem =
-      DbItem(0, w.name, w.cd, w._type.toString, w.passiveEffects, w.activeEffects, u.id, None, None, Some(w.weaponType.toString), Some(w.baseDamage), Some(w.twoHanded), Some(w.damageType.toString), w.rarity.toString)
+      DbItem(0, w.name, w.cd, w._type.toString, w.passiveEffects, w.activeEffects, u.id, None, None, None, Some(w.weaponType.toString), Some(w.baseDamage), Some(w.twoHanded), Some(w.damageType.toString), w.rarity.toString)
 
     val dbItem = item match {
       case a: Armor => armorToDbItem(a, user)

@@ -16,10 +16,10 @@ class JsonSupportSpec extends AnyWordSpecLike with Matchers {
     10,
     self = true
   )
-  val body: Body = Body("test", 1000, 30, Rarity.Mediocre, List(passiveEffect), List(activeEffect))
+  val body: Body = Body("test", 1000, 30, ArmorType.Heavy, Rarity.Mediocre, List(passiveEffect), List(activeEffect))
   val armorSet: ArmorSet = ArmorSet.empty.copy(body = Some(body))
   val sword: Sword = Sword("test", 1000, 20, twoHanded = false, DamageType.Magical)
-  val shield: Shield = Shield("test", 1, 2, Rarity.Mediocre, List(passiveEffect), List(activeEffect))
+  val shield: Shield = Shield("test", 1, 2, ArmorType.Heavy, Rarity.Mediocre, List(passiveEffect), List(activeEffect))
   val oneHandedHandle: OneHandedHandle = OneHandedHandle(sword, Some(shield))
   val pawn: Pawn = Pawn("name", oneHandedHandle, armorSet, InitialProperties())
   val pawn2: Pawn = Pawn("name2", oneHandedHandle, armorSet, InitialProperties())
@@ -67,35 +67,35 @@ class JsonSupportSpec extends AnyWordSpecLike with Matchers {
 
   "Armor:" should {
     "helmet should serialize and deserialize" in {
-      val helmet = Helmet("test", 1, 2, Rarity.Mediocre, List(passiveEffect), List(activeEffect))
+      val helmet = Helmet("test", 1, 2, ArmorType.Heavy, Rarity.Mediocre, List(passiveEffect), List(activeEffect))
       val json = helmet.toJson.toString
       val obj = json.parseJson.convertTo[Armor]
       obj shouldBe helmet
     }
 
     "body should serialize and deserialize" in {
-      val body = Body("test", 1, 2, Rarity.Mediocre, List(passiveEffect), List(activeEffect))
+      val body = Body("test", 1, 2, ArmorType.Heavy, Rarity.Mediocre, List(passiveEffect), List(activeEffect))
       val json = body.toJson.toString
       val obj = json.parseJson.convertTo[Armor]
       obj shouldBe body
     }
 
     "boots should serialize and deserialize" in {
-      val greaves = Greaves("test", 1, 2, Rarity.Masterpiece, List(passiveEffect), List(activeEffect))
+      val greaves = Greaves("test", 1, 2, ArmorType.Heavy, Rarity.Masterpiece, List(passiveEffect), List(activeEffect))
       val json = greaves.toJson.toString
       val obj = json.parseJson.convertTo[Armor]
       obj shouldBe greaves
     }
 
     "amulet should serialize and deserialize" in {
-      val amulet = Amulet("test", 1, 2, Rarity.Masterpiece, List(passiveEffect), List(activeEffect))
+      val amulet = Amulet("test", 1, 2, ArmorType.Heavy, Rarity.Masterpiece, List(passiveEffect), List(activeEffect))
       val json = amulet.toJson.toString
       val obj = json.parseJson.convertTo[Armor]
       obj shouldBe amulet
     }
 
     "shield should serialize and deserialize" in {
-      val shield = Shield("test", 1, 2, Rarity.Masterpiece, List(passiveEffect), List(activeEffect))
+      val shield = Shield("test", 1, 2, ArmorType.Heavy, Rarity.Masterpiece, List(passiveEffect), List(activeEffect))
       val json = shield.toJson.toString
       val obj = json.parseJson.convertTo[Armor]
       obj shouldBe shield
@@ -103,7 +103,7 @@ class JsonSupportSpec extends AnyWordSpecLike with Matchers {
   }
 
   "ArmorSet should serialize and deserialize" in {
-    val body = Body("test", 1000, 30, Rarity.Masterpiece, List(passiveEffect), List(activeEffect))
+    val body = Body("test", 1000, 30, ArmorType.Heavy, Rarity.Masterpiece, List(passiveEffect), List(activeEffect))
     val armorSet = ArmorSet.empty.copy(body = Some(body))
     val json = armorSet.toJson.toString
     val obj = json.parseJson.convertTo[ArmorSet]
@@ -142,7 +142,7 @@ class JsonSupportSpec extends AnyWordSpecLike with Matchers {
 
   "Item:" should {
     "armor should serialize and deserialize into item" in {
-      val greaves = Greaves("test", 1000, 20, Rarity.Masterpiece, List(passiveEffect), List(activeEffect))
+      val greaves = Greaves("test", 1000, 20, ArmorType.Heavy, Rarity.Masterpiece, List(passiveEffect), List(activeEffect))
       val json = greaves.toJson.toString
       val obj = json.parseJson.convertTo[Item]
       obj shouldBe greaves
@@ -168,7 +168,7 @@ class JsonSupportSpec extends AnyWordSpecLike with Matchers {
 
     "onaHandedHandle" in {
       val sword = Sword("test", 1000, 20, twoHanded = false, DamageType.Magical)
-      val shield = Shield("test", 1, 2, Rarity.Masterpiece, List(passiveEffect), List(activeEffect))
+      val shield = Shield("test", 1, 2, ArmorType.Heavy, Rarity.Masterpiece, List(passiveEffect), List(activeEffect))
       val oneHandedHandle = OneHandedHandle(sword, Some(shield))
       val json = oneHandedHandle.toJson.toString
       val obj = json.parseJson.convertTo[Handle]

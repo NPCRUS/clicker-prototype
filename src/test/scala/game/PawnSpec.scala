@@ -1,6 +1,6 @@
 package game
 
-import game.items.{ArmorSet, EffectTargetType, Helmet, OneHandedHandle, OneTimeActiveEffect, PassiveEffect, PeriodicActiveEffect, Shield, Sword, TwoHandedHandle}
+import game.items.{ArmorSet, ArmorType, EffectTargetType, Helmet, OneHandedHandle, OneTimeActiveEffect, PassiveEffect, PeriodicActiveEffect, Shield, Sword, TwoHandedHandle}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 
@@ -22,6 +22,7 @@ class PawnSpec
     name = "test helmet",
     cd = 1000,
     armor = 30,
+    armorType = ArmorType.Heavy,
     passiveEffects = List(
       PassiveEffect(EffectTargetType.Hp, 52),
       PassiveEffect(EffectTargetType.Armor, 32),
@@ -55,7 +56,7 @@ class PawnSpec
     }
 
     "calculating armor check" in {
-      val shield = Shield("", 1, 132)
+      val shield = Shield("", 1, 132, armorType = ArmorType.Heavy)
       val pawnWithShield = pawn.copy(handle = OneHandedHandle(Sword("", 1, 1, twoHanded = false), Some(shield)))
       pawn.armor shouldEqual armorSet.getAll.map(_.armor).sum + pawnWithShield.getEffectChangeByType(EffectTargetType.Armor)
     }

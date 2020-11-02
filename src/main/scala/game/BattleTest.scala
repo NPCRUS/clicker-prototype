@@ -30,7 +30,7 @@ object BattleTest extends App {
     List(PassiveEffect(EffectTargetType.PhysicMastery, 1000))
   )
   val handle2 = TwoHandedHandle(pitchfork)
-  val body = Body("best", 10000, 100, Rarity.Mediocre, List.empty)
+  val body = Body("best", 10000, 100, ArmorType.Heavy, Rarity.Mediocre, List.empty)
   val armorSet = ArmorSet.empty.copy(body = Some(body))
   val pawn2 = Pawn("John", handle2, armorSet, InitialProperties(100))
 
