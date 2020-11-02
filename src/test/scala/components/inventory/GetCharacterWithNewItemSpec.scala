@@ -50,14 +50,14 @@ class GetCharacterWithNewItemSpec extends AnyWordSpecLike with Matchers {
       newCharacter should be(emptyCharacter.equipArmor(Some(dbItem.id), equipmentPart))
     }
 
-    "equip boots into not boots slot should throw exception" in {
+    "equip greaves into not greaves slot should throw exception" in {
       val dbItem = itemToDbItem(greaves)
 
       an[EquipPartAndItemNotCompatible] should be thrownBy
         controller.getCharacterWithNewItem(dbItem, emptyCharacter, EquipmentPart.MainHand, Seq.empty)
     }
 
-    "equip boots into boots slot should return new DbCharacter" in {
+    "equip greaves into greaves slot should return new DbCharacter" in {
       val dbItem = itemToDbItem(greaves)
       val equipmentPart = EquipmentPart.Greaves
       val newCharacter = controller.getCharacterWithNewItem(dbItem, emptyCharacter, equipmentPart, Seq.empty)

@@ -103,5 +103,6 @@ object AttributeScaling {
       effect(level, CritChance),
       effect(level, CritMultiplier)
     )
+    case _ => throw new Exception("getEffectsForArmor match somehow not exhaustive")
   }
 }

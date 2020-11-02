@@ -29,7 +29,7 @@ class Character(tag: Tag) extends Table[DbCharacter](tag, "character") {
 
   def body = column[Int]("body")
 
-  def greaves = column[Int]("boots")
+  def greaves = column[Int]("greaves")
 
   def amulet = column[Int]("amulet")
 

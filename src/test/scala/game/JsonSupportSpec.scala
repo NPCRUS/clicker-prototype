@@ -80,7 +80,7 @@ class JsonSupportSpec extends AnyWordSpecLike with Matchers {
       obj shouldBe body
     }
 
-    "boots should serialize and deserialize" in {
+    "greaves should serialize and deserialize" in {
       val greaves = Greaves("test", 1, 2, ArmorType.Heavy, Rarity.Masterpiece, List(passiveEffect), List(activeEffect))
       val json = greaves.toJson.toString
       val obj = json.parseJson.convertTo[Armor]

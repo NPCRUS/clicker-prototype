@@ -27,7 +27,9 @@ object JsonSupport extends SprayJsonSupport with DefaultJsonProtocol with NullOp
     }
   }
 
-  implicit val equipItemRequest: RootJsonFormat[EquipItemRequest] = jsonFormat2(EquipItemRequest)
-  implicit val unequipItemRequest: RootJsonFormat[UnequipItemRequest] = jsonFormat1(UnequipItemRequest)
+  implicit val equipItemRequestProtocol: RootJsonFormat[EquipItemRequest] = jsonFormat2(EquipItemRequest)
+  implicit val unequipItemRequestProtocol: RootJsonFormat[UnequipItemRequest] = jsonFormat1(UnequipItemRequest)
+
+  implicit val battleResultProtocol: RootJsonFormat[BattleResult] = jsonFormat2(BattleResult)
 
 }

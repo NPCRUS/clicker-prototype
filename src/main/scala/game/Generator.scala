@@ -19,8 +19,9 @@ object Generator {
     Pawn(generateBotName, handle, armorSet, initialProperties)
   }
 
-  def generateReward(mapLevel: Int): Item = {
-    getListOfItems(mapLevel).random
+  def generateReward(mapLevel: Int): Option[Item] = {
+    if(Random.between(0, 100) > 10) None
+    else Some(getListOfItems(mapLevel).random)
   }
 
   private def randomWeapon(mapLevel: Int): Weapon = {

@@ -1,5 +1,6 @@
 package models
 
+import game.Action
 import game.JsonSupport._
 import game.items._
 import models.JsonSupport._
@@ -58,3 +59,6 @@ case class DbCharacterWithItems(id: Int,
                                 userId: Int,
                                 armorSet: ArmorSet,
                                 handle: Handle)
+
+case class BattleResult(actions: List[Action],
+                        reward: List[Item])
