@@ -1,5 +1,6 @@
 package models
 
+import game.items.Constants
 import utils.AppConfig
 import utils.MyPostgresProfile.api._
 
@@ -12,8 +13,10 @@ object Transactions
     db.run(
       (for {
         id <- UserModel.createFromToken(token)
-        _ <- CharacterModel.create(id)
+        character <- CharacterModel.create(id)
         user <- UserModel.filter(_.id === id).result.head
+        item <- InventoryModel.insertQuery(DbItem.fromGameItem(Constants.defaultItem, user))
+        _ <- CharacterModel.upsert(character.copy(mainHand = Some(item.id)))
       } yield user).transactionally
     )
   }

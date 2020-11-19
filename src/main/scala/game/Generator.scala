@@ -55,7 +55,7 @@ object Generator {
 
   private def updateWeapon(level: Int, weapon: Weapon): Weapon = {
     val _type = weapon.weaponType
-    val preCalc = calcDamageAndCd(level, _type)
+    val preCalc = calcCdAndDamage(level, _type)
     val (cd, damage) = twoHandedConversion(weapon.twoHanded, preCalc._1, preCalc._2)
 
     weapon match {

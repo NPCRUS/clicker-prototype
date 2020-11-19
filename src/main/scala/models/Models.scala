@@ -61,4 +61,4 @@ case class DbCharacterWithItems(id: Int,
                                 handle: Handle)
 
 case class BattleResult(actions: List[Action],
-                        reward: List[Item])
+                        reward: List[DbItem])

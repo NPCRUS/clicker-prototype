@@ -10,8 +10,8 @@ object CharacterModel extends TableQuery(new Character(_)) {
   def getCharacter(user: User): SqlAction[DbCharacter, NoStream, Effect.Read] =
     this.filter(_.userId === user.id).result.head
 
-  def create(userId: Int): FixedSqlAction[Int, NoStream, Effect.Write] =
-    this += DbCharacter(0, userId, None, None, None, None, None, None)
+  def create(userId: Int): FixedSqlAction[DbCharacter, NoStream, Effect.Write] =
+    (this returning this) += DbCharacter(0, userId, None, None, None, None, None, None)
 
   def upsert(character: DbCharacter): FixedSqlAction[Int, NoStream, Effect.Write] = {
     this.insertOrUpdate(character)

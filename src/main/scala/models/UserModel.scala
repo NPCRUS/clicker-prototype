@@ -10,9 +10,11 @@ object UserModel extends TableQuery(new Users(_)) {
     .result
     .headOption
 
-  def createFromToken(token: Token): FixedSqlAction[Int, NoStream, Effect.Write] = {
+  def createFromToken(token: Token): FixedSqlAction[Int, NoStream, Effect.Write] =
     (this returning this.map(_.id)) += User(0, token.opaque_user_id, token.channel_id, token.role, token.is_unlinked, token.user_id.toInt)
-  }
+
+  def upsert(user: User): FixedSqlAction[Int, NoStream, Effect.Write] =
+    this.insertOrUpdate(user)
 }
 
 class Users(tag: Tag) extends Table[User](tag, "users") {

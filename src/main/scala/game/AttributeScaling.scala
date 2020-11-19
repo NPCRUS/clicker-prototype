@@ -8,7 +8,7 @@ import scala.util.Random
 object AttributeScaling {
 
   def calcItemCd(level: Int): Int =
-    (-160 * level) + 5000
+    (-160 * level) + 8000
 
   def calcArmor(level: Int, armorType: ArmorPart.Type): Int =
     if(armorType == ArmorPart.Body || armorType == ArmorPart.Shield)
@@ -16,26 +16,26 @@ object AttributeScaling {
     else
       (level * 15) + Random.between(10, 30)
 
-  def calcDamageAndCd(level: Int, weaponType: WeaponType.Type): (Int, Int) = weaponType match {
+  def calcCdAndDamage(level: Int, weaponType: WeaponType.Type): (Int, Int) = weaponType match {
     case WeaponType.Sword =>
       (
-        (-50 * level) + 3,
-        50 + level * 20
+        (-15 * level) + 5000,
+        7 + level * 20
       )
     case WeaponType.Dagger =>
       (
-        (-50 * level) + 2,
-        40 + level * 20
+        (-15 * level) + 4000,
+        4 + level * 20
       )
     case WeaponType.Polearm =>
       (
-        (-50 * level) + 3,
-        45 + level * 20
+        (-15 * level) + 4500,
+        6 + level * 20
       )
     case WeaponType.Axe =>
       (
-        (-50 * level) + 3,
-        50
+        (-15 * level) + 5300,
+        7 + level * 20
       )
 
   }

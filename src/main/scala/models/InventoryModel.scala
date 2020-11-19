@@ -20,10 +20,11 @@ object InventoryModel extends TableQuery(new Inventory(_)) {
   def getItemsByIds(ids: Seq[Int]): FixedSqlStreamingAction[Seq[DbItem], DbItem, Effect.Read] =
     this.filter(_.id.inSet(ids)).result
 
+  def insertQuery(item: DbItem) =
+    (this returning this) += item
+
   def insert(item: DbItem): Future[DbItem] = {
-    db.run {
-      (this returning this) += item
-    }
+    db.run(insertQuery(item))
   }
 }
 
